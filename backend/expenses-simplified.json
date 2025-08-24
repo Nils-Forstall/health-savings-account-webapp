@@ -1,0 +1,3599 @@
+{
+  "expenses": [
+    {
+      "name": "AA Meeting Transportation",
+      "is_qualified": true
+    },
+    {
+      "name": "Abdominoplasty",
+      "is_qualified": false
+    },
+    {
+      "name": "Acetaminophen",
+      "is_qualified": true
+    },
+    {
+      "name": "Acid Controller",
+      "is_qualified": true
+    },
+    {
+      "name": "Acne Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Activated Charcoal",
+      "is_qualified": false
+    },
+    {
+      "name": "Acupressure",
+      "is_qualified": true
+    },
+    {
+      "name": "Acupressure Mat",
+      "is_qualified": true
+    },
+    {
+      "name": "Acupressure Wrist Band",
+      "is_qualified": true
+    },
+    {
+      "name": "Acupuncture",
+      "is_qualified": true
+    },
+    {
+      "name": "Adaptive Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Adoption (fees associated with adopting a child)",
+      "is_qualified": false
+    },
+    {
+      "name": "Adult Day Care",
+      "is_qualified": false
+    },
+    {
+      "name": "After-School Care or Extended Day Care Programs",
+      "is_qualified": false
+    },
+    {
+      "name": "Agency Fee for Child Care",
+      "is_qualified": false
+    },
+    {
+      "name": "Air Conditioner",
+      "is_qualified": true
+    },
+    {
+      "name": "Air Filter",
+      "is_qualified": true
+    },
+    {
+      "name": "Air Purifier",
+      "is_qualified": true
+    },
+    {
+      "name": "Airfare Related to Medical Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Alcoholism/Substance Abuse Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Allergy Medicines",
+      "is_qualified": true
+    },
+    {
+      "name": "Allergy Products and Treatment (Non-Drug)",
+      "is_qualified": true
+    },
+    {
+      "name": "Allergy Testing",
+      "is_qualified": true
+    },
+    {
+      "name": "Aloe Vera",
+      "is_qualified": true
+    },
+    {
+      "name": "Alopecia Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Alternative Healers",
+      "is_qualified": true
+    },
+    {
+      "name": "Alternative Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Ambulance and Emergency Room",
+      "is_qualified": true
+    },
+    {
+      "name": "Analgesics (OTC)",
+      "is_qualified": true
+    },
+    {
+      "name": "Anesthesia",
+      "is_qualified": true
+    },
+    {
+      "name": "Ankle Brace",
+      "is_qualified": true
+    },
+    {
+      "name": "Antacids",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Bacterial Hand Sanitizer",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Bacterial Hand Sanitizer (60%+ Alcohol)",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Diarrheal",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Embolism Socks, Stockings",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Fungal Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Gas Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Inflammatories",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Itch Cream or Lotion",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Parasitic",
+      "is_qualified": true
+    },
+    {
+      "name": "Anti-Snore Guards",
+      "is_qualified": true
+    },
+    {
+      "name": "Antibiotic Ointments",
+      "is_qualified": true
+    },
+    {
+      "name": "Antibiotics",
+      "is_qualified": true
+    },
+    {
+      "name": "Antidepressants",
+      "is_qualified": true
+    },
+    {
+      "name": "Antihistamines",
+      "is_qualified": true
+    },
+    {
+      "name": "Antipyretics (fever reducers)",
+      "is_qualified": true
+    },
+    {
+      "name": "Antiseptics",
+      "is_qualified": true
+    },
+    {
+      "name": "Appearance Improvements",
+      "is_qualified": false
+    },
+    {
+      "name": "Arch Support",
+      "is_qualified": true
+    },
+    {
+      "name": "Arm Sling",
+      "is_qualified": true
+    },
+    {
+      "name": "Aromatherapy",
+      "is_qualified": false
+    },
+    {
+      "name": "Arthritis Gloves",
+      "is_qualified": true
+    },
+    {
+      "name": "Arthritis Medicines",
+      "is_qualified": true
+    },
+    {
+      "name": "Artificial Insemination",
+      "is_qualified": true
+    },
+    {
+      "name": "Artificial Limbs",
+      "is_qualified": true
+    },
+    {
+      "name": "Artificial Reproduction",
+      "is_qualified": true
+    },
+    {
+      "name": "Artificial Teeth",
+      "is_qualified": false
+    },
+    {
+      "name": "Aspirin",
+      "is_qualified": true
+    },
+    {
+      "name": "Assisted Living",
+      "is_qualified": true
+    },
+    {
+      "name": "Asthma Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Asthma Oxygen Flow Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "At Home COVID-19 Test",
+      "is_qualified": true
+    },
+    {
+      "name": "At-Home Drug Test",
+      "is_qualified": true
+    },
+    {
+      "name": "Athletic Bandages & Braces",
+      "is_qualified": true
+    },
+    {
+      "name": "Athletic Mouth Guard",
+      "is_qualified": true
+    },
+    {
+      "name": "Athletic Tape",
+      "is_qualified": true
+    },
+    {
+      "name": "Athletic Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Automated External Defibrillator (AED)",
+      "is_qualified": true
+    },
+    {
+      "name": "Automobile Modifications",
+      "is_qualified": true
+    },
+    {
+      "name": "Autopsy",
+      "is_qualified": false
+    },
+    {
+      "name": "Baby Bottles",
+      "is_qualified": false
+    },
+    {
+      "name": "Baby Breathing Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Baby Formula",
+      "is_qualified": false
+    },
+    {
+      "name": "Baby Oil",
+      "is_qualified": false
+    },
+    {
+      "name": "Baby Powder",
+      "is_qualified": false
+    },
+    {
+      "name": "Baby Rash Ointment and Cream",
+      "is_qualified": true
+    },
+    {
+      "name": "Baby Sunscreen",
+      "is_qualified": true
+    },
+    {
+      "name": "Babysitting and child care",
+      "is_qualified": false
+    },
+    {
+      "name": "Back Brace",
+      "is_qualified": true
+    },
+    {
+      "name": "Band-Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Bandage Clips",
+      "is_qualified": true
+    },
+    {
+      "name": "Bandages",
+      "is_qualified": true
+    },
+    {
+      "name": "Bandages, elastic",
+      "is_qualified": true
+    },
+    {
+      "name": "Bariatric Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Batteries for Medical Devices",
+      "is_qualified": true
+    },
+    {
+      "name": "Bed Pan",
+      "is_qualified": true
+    },
+    {
+      "name": "Bed Wetting Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Behavioral modification programs",
+      "is_qualified": true
+    },
+    {
+      "name": "Benadryl",
+      "is_qualified": true
+    },
+    {
+      "name": "Bifocals",
+      "is_qualified": true
+    },
+    {
+      "name": "Bio Freeze",
+      "is_qualified": true
+    },
+    {
+      "name": "Biotin Supplements",
+      "is_qualified": false
+    },
+    {
+      "name": "Birth Control (OTC)",
+      "is_qualified": true
+    },
+    {
+      "name": "Birth Control (Rx)",
+      "is_qualified": true
+    },
+    {
+      "name": "Birthing Classes",
+      "is_qualified": true
+    },
+    {
+      "name": "Birthing Coach",
+      "is_qualified": true
+    },
+    {
+      "name": "Bleaching, teeth whitening",
+      "is_qualified": false
+    },
+    {
+      "name": "Blepharoplasty",
+      "is_qualified": false
+    },
+    {
+      "name": "Blood Donation",
+      "is_qualified": true
+    },
+    {
+      "name": "Blood Pressure Monitor or Unit",
+      "is_qualified": true
+    },
+    {
+      "name": "Blood Storage",
+      "is_qualified": true
+    },
+    {
+      "name": "Blood-sugar test kits and test strips",
+      "is_qualified": true
+    },
+    {
+      "name": "Body Restoration Technique",
+      "is_qualified": true
+    },
+    {
+      "name": "Body Scan",
+      "is_qualified": true
+    },
+    {
+      "name": "Bonding of the teeth",
+      "is_qualified": true
+    },
+    {
+      "name": "Books, health-related",
+      "is_qualified": true
+    },
+    {
+      "name": "Botox",
+      "is_qualified": false
+    },
+    {
+      "name": "Boutique Practice Fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Bracanalysis Testing",
+      "is_qualified": true
+    },
+    {
+      "name": "Braces",
+      "is_qualified": true
+    },
+    {
+      "name": "Braces (Dental)",
+      "is_qualified": true
+    },
+    {
+      "name": "Braille Books",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast Augmentation",
+      "is_qualified": false
+    },
+    {
+      "name": "Breast Implant Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast Milk Storage Bottles or Bags",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast MRI",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast Pump",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast Pump Bustier",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast Reconstruction Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Breast Reduction",
+      "is_qualified": true
+    },
+    {
+      "name": "Breastfeeding Classes",
+      "is_qualified": true
+    },
+    {
+      "name": "Breathalyzer",
+      "is_qualified": true
+    },
+    {
+      "name": "Bridges",
+      "is_qualified": true
+    },
+    {
+      "name": "Bug Spray",
+      "is_qualified": false
+    },
+    {
+      "name": "Bus Fare for Medical Treatment or Services",
+      "is_qualified": true
+    },
+    {
+      "name": "Butterfly Bandages",
+      "is_qualified": true
+    },
+    {
+      "name": "Caffeine Pills",
+      "is_qualified": false
+    },
+    {
+      "name": "Calamine Lotion",
+      "is_qualified": true
+    },
+    {
+      "name": "Calcium Scoring",
+      "is_qualified": true
+    },
+    {
+      "name": "Calcium Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Callus Remover (Medicated)",
+      "is_qualified": true
+    },
+    {
+      "name": "Camps (Overnight)",
+      "is_qualified": false
+    },
+    {
+      "name": "Camps (soccer, football, ballet, etc. day camps)",
+      "is_qualified": false
+    },
+    {
+      "name": "Camps (summer or holiday day camps)",
+      "is_qualified": false
+    },
+    {
+      "name": "Cancer Insurance Premiums",
+      "is_qualified": false
+    },
+    {
+      "name": "Cancer Screenings",
+      "is_qualified": true
+    },
+    {
+      "name": "Cane",
+      "is_qualified": true
+    },
+    {
+      "name": "Canker Sore Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Capital Expenditures",
+      "is_qualified": true
+    },
+    {
+      "name": "Car Changes for Health Reasons",
+      "is_qualified": true
+    },
+    {
+      "name": "Car Modifications for Health Reasons",
+      "is_qualified": true
+    },
+    {
+      "name": "Car Rental (related to medical care)",
+      "is_qualified": true
+    },
+    {
+      "name": "Car Seats",
+      "is_qualified": false
+    },
+    {
+      "name": "Cardiac Calcium Scoring",
+      "is_qualified": true
+    },
+    {
+      "name": "Cardiac Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Carpal Tunnel Support",
+      "is_qualified": true
+    },
+    {
+      "name": "Cast Cover",
+      "is_qualified": true
+    },
+    {
+      "name": "Cataract Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Catheter",
+      "is_qualified": true
+    },
+    {
+      "name": "Cayenne Pepper",
+      "is_qualified": true
+    },
+    {
+      "name": "CBD",
+      "is_qualified": false
+    },
+    {
+      "name": "Cervical Pillow",
+      "is_qualified": true
+    },
+    {
+      "name": "Chair, Specialized or Ergonomic",
+      "is_qualified": true
+    },
+    {
+      "name": "Chelation Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Chemical Peel",
+      "is_qualified": false
+    },
+    {
+      "name": "Chest Rub",
+      "is_qualified": true
+    },
+    {
+      "name": "Child Care",
+      "is_qualified": false
+    },
+    {
+      "name": "Child Medical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Childbirth",
+      "is_qualified": true
+    },
+    {
+      "name": "Childbirth Classes",
+      "is_qualified": true
+    },
+    {
+      "name": "Children's Sunscreen",
+      "is_qualified": true
+    },
+    {
+      "name": "Chinese Herbal Practitioners",
+      "is_qualified": true
+    },
+    {
+      "name": "Chiropodist Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Chiropractor Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Cholesterol Test Kit",
+      "is_qualified": true
+    },
+    {
+      "name": "Chondroitin",
+      "is_qualified": true
+    },
+    {
+      "name": "Christian Science Practitioner",
+      "is_qualified": true
+    },
+    {
+      "name": "Circumcision",
+      "is_qualified": true
+    },
+    {
+      "name": "Classes, Health-Related",
+      "is_qualified": true
+    },
+    {
+      "name": "Clinic",
+      "is_qualified": false
+    },
+    {
+      "name": "Club Dues",
+      "is_qualified": false
+    },
+    {
+      "name": "Co-Insurance",
+      "is_qualified": true
+    },
+    {
+      "name": "Co-Payments",
+      "is_qualified": true
+    },
+    {
+      "name": "COBRA Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Cocoa Butter",
+      "is_qualified": true
+    },
+    {
+      "name": "Coconut Oil",
+      "is_qualified": true
+    },
+    {
+      "name": "Cold Compress, Pain Relief",
+      "is_qualified": true
+    },
+    {
+      "name": "Cold Cream",
+      "is_qualified": false
+    },
+    {
+      "name": "Cold Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Cold Packs",
+      "is_qualified": true
+    },
+    {
+      "name": "Cold Sore Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Colic Relief",
+      "is_qualified": true
+    },
+    {
+      "name": "Collagen Injections",
+      "is_qualified": true
+    },
+    {
+      "name": "Cologne",
+      "is_qualified": false
+    },
+    {
+      "name": "Colon Therapy, Colon Hydrotherapy, Colonics",
+      "is_qualified": true
+    },
+    {
+      "name": "Companion Animals",
+      "is_qualified": true
+    },
+    {
+      "name": "Compression Hosiery",
+      "is_qualified": true
+    },
+    {
+      "name": "Compression Sleeves",
+      "is_qualified": true
+    },
+    {
+      "name": "Compression Socks",
+      "is_qualified": true
+    },
+    {
+      "name": "Concierge Fees (Up Front)",
+      "is_qualified": false
+    },
+    {
+      "name": "Concierge Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Condoms",
+      "is_qualified": true
+    },
+    {
+      "name": "Constipation Medication",
+      "is_qualified": true
+    },
+    {
+      "name": "Contact Cleaning Solution",
+      "is_qualified": true
+    },
+    {
+      "name": "Contact Lens Case",
+      "is_qualified": true
+    },
+    {
+      "name": "Contact Lenses",
+      "is_qualified": true
+    },
+    {
+      "name": "Contact Solution",
+      "is_qualified": true
+    },
+    {
+      "name": "Contraceptives (OTC)",
+      "is_qualified": true
+    },
+    {
+      "name": "Contraceptives (Rx)",
+      "is_qualified": true
+    },
+    {
+      "name": "Controlled substances in violation of federal law",
+      "is_qualified": false
+    },
+    {
+      "name": "Convalescent Home",
+      "is_qualified": true
+    },
+    {
+      "name": "Cooling Gel Sheets for Fever Reduction",
+      "is_qualified": true
+    },
+    {
+      "name": "CoolSculpting",
+      "is_qualified": false
+    },
+    {
+      "name": "Cord Blood Storage",
+      "is_qualified": true
+    },
+    {
+      "name": "Corn Remover",
+      "is_qualified": true
+    },
+    {
+      "name": "Corneal Keratotomy",
+      "is_qualified": true
+    },
+    {
+      "name": "Corneal Ring Segments",
+      "is_qualified": true
+    },
+    {
+      "name": "Cosmetic Procedures",
+      "is_qualified": false
+    },
+    {
+      "name": "Cosmetics",
+      "is_qualified": false
+    },
+    {
+      "name": "Cotton Balls",
+      "is_qualified": false
+    },
+    {
+      "name": "Cotton Swabs",
+      "is_qualified": false
+    },
+    {
+      "name": "Cough Drops",
+      "is_qualified": true
+    },
+    {
+      "name": "Cough Suppressant",
+      "is_qualified": true
+    },
+    {
+      "name": "Cough Syrup",
+      "is_qualified": true
+    },
+    {
+      "name": "Counseling",
+      "is_qualified": true
+    },
+    {
+      "name": "COVID-19 Test",
+      "is_qualified": true
+    },
+    {
+      "name": "CPAP Cleaning Products",
+      "is_qualified": true
+    },
+    {
+      "name": "CPAP Hose Holder",
+      "is_qualified": true
+    },
+    {
+      "name": "CPAP Machine",
+      "is_qualified": true
+    },
+    {
+      "name": "CPAP Mask and Headgear",
+      "is_qualified": true
+    },
+    {
+      "name": "CPAP Pillow",
+      "is_qualified": true
+    },
+    {
+      "name": "CPR Class",
+      "is_qualified": false
+    },
+    {
+      "name": "Cranberry Pills",
+      "is_qualified": true
+    },
+    {
+      "name": "Cranial Sacral Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Crowns (Dental)",
+      "is_qualified": true
+    },
+    {
+      "name": "Crutches",
+      "is_qualified": true
+    },
+    {
+      "name": "Crystalens",
+      "is_qualified": true
+    },
+    {
+      "name": "CT Scan",
+      "is_qualified": true
+    },
+    {
+      "name": "Daith Piercing",
+      "is_qualified": true
+    },
+    {
+      "name": "Dance Lessons",
+      "is_qualified": false
+    },
+    {
+      "name": "Dandruff Shampoo",
+      "is_qualified": true
+    },
+    {
+      "name": "Daycare",
+      "is_qualified": false
+    },
+    {
+      "name": "Decongestant",
+      "is_qualified": true
+    },
+    {
+      "name": "Deductible Cost",
+      "is_qualified": true
+    },
+    {
+      "name": "Defibrillator",
+      "is_qualified": true
+    },
+    {
+      "name": "Dehumidifier",
+      "is_qualified": false
+    },
+    {
+      "name": "Dehydration Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Cleaning",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Cleanings",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Dam",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Floss",
+      "is_qualified": false
+    },
+    {
+      "name": "Dental Implants (Medical)",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Insurance Premiums",
+      "is_qualified": false
+    },
+    {
+      "name": "Dental Maintenance Organization (DMO)",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Procedures",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Reconstruction",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Sealants",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Services and Procedures",
+      "is_qualified": true
+    },
+    {
+      "name": "Dental Veneers",
+      "is_qualified": true
+    },
+    {
+      "name": "Denture Adhesive",
+      "is_qualified": true
+    },
+    {
+      "name": "Denture Cleaning Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Denture Stain Cleaner",
+      "is_qualified": true
+    },
+    {
+      "name": "Dentures",
+      "is_qualified": true
+    },
+    {
+      "name": "Denturist",
+      "is_qualified": true
+    },
+    {
+      "name": "Deodorant",
+      "is_qualified": false
+    },
+    {
+      "name": "Dependent Care",
+      "is_qualified": false
+    },
+    {
+      "name": "Dermabrasion",
+      "is_qualified": false
+    },
+    {
+      "name": "Dermatology Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Detoxification",
+      "is_qualified": true
+    },
+    {
+      "name": "DEXA Scan",
+      "is_qualified": true
+    },
+    {
+      "name": "Diabetic Bracelet",
+      "is_qualified": true
+    },
+    {
+      "name": "Diabetic Monitors",
+      "is_qualified": true
+    },
+    {
+      "name": "Diabetic Socks",
+      "is_qualified": true
+    },
+    {
+      "name": "Diabetic Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Diabetic Test Kit",
+      "is_qualified": true
+    },
+    {
+      "name": "Diabetic Test Strips",
+      "is_qualified": true
+    },
+    {
+      "name": "Diagnostic Products",
+      "is_qualified": true
+    },
+    {
+      "name": "Diagnostic Services",
+      "is_qualified": true
+    },
+    {
+      "name": "Diaper Rash Cream & Ointment",
+      "is_qualified": true
+    },
+    {
+      "name": "Diapers (Infant)",
+      "is_qualified": false
+    },
+    {
+      "name": "Diarrhea Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Diathermy",
+      "is_qualified": true
+    },
+    {
+      "name": "Diet Foods",
+      "is_qualified": false
+    },
+    {
+      "name": "Dietary Supplements",
+      "is_qualified": false
+    },
+    {
+      "name": "Dietitian",
+      "is_qualified": true
+    },
+    {
+      "name": "Digestive Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Digital Thermometer",
+      "is_qualified": true
+    },
+    {
+      "name": "Dilator",
+      "is_qualified": true
+    },
+    {
+      "name": "Disability Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Disabled Dependent Care Expenses, Medical",
+      "is_qualified": true
+    },
+    {
+      "name": "Disabled Person, expenses for",
+      "is_qualified": true
+    },
+    {
+      "name": "Disposable Bra Pads for Nursing",
+      "is_qualified": true
+    },
+    {
+      "name": "Disposable Face Mask to Prevent COVID-19",
+      "is_qualified": true
+    },
+    {
+      "name": "Disposable Face Masks",
+      "is_qualified": true
+    },
+    {
+      "name": "Disposable Underwear",
+      "is_qualified": true
+    },
+    {
+      "name": "Diuretics",
+      "is_qualified": true
+    },
+    {
+      "name": "DNA Storage",
+      "is_qualified": true
+    },
+    {
+      "name": "Doctor Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Donor Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Douche",
+      "is_qualified": false
+    },
+    {
+      "name": "Doula",
+      "is_qualified": true
+    },
+    {
+      "name": "Drug Addiction Treatment & Counseling",
+      "is_qualified": true
+    },
+    {
+      "name": "Drug Overdose Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Drug Testing Kits for Home Use",
+      "is_qualified": true
+    },
+    {
+      "name": "Drugs and Medicines",
+      "is_qualified": true
+    },
+    {
+      "name": "Durable Medical Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Dyslexia Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Ear Drops and Wax Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Ear Piercing",
+      "is_qualified": false
+    },
+    {
+      "name": "Ear Plugs",
+      "is_qualified": true
+    },
+    {
+      "name": "Ear Syringe",
+      "is_qualified": true
+    },
+    {
+      "name": "Ear Thermometer",
+      "is_qualified": true
+    },
+    {
+      "name": "Ear Wax Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Eczema Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Educational Classes for Medical Condition",
+      "is_qualified": true
+    },
+    {
+      "name": "Egg and Embryo Storage Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Egg Donor Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Egg Recipient Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Elastics for Athletes",
+      "is_qualified": true
+    },
+    {
+      "name": "Elder Care",
+      "is_qualified": false
+    },
+    {
+      "name": "Electric Toothbrush",
+      "is_qualified": false
+    },
+    {
+      "name": "Electrolysis",
+      "is_qualified": false
+    },
+    {
+      "name": "Electrolyte Replacements (Baby)",
+      "is_qualified": true
+    },
+    {
+      "name": "Electrolyte Replacements (Non-Baby)",
+      "is_qualified": true
+    },
+    {
+      "name": "Electronic Cigarettes",
+      "is_qualified": false
+    },
+    {
+      "name": "Electrotherapy Pain Relief Device",
+      "is_qualified": true
+    },
+    {
+      "name": "Elevated Toilet Seats",
+      "is_qualified": true
+    },
+    {
+      "name": "Elevator in Home",
+      "is_qualified": true
+    },
+    {
+      "name": "Enema",
+      "is_qualified": true
+    },
+    {
+      "name": "Epinephrine",
+      "is_qualified": true
+    },
+    {
+      "name": "Epsom Salt",
+      "is_qualified": true
+    },
+    {
+      "name": "Erectile Dysfunction Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Ergonomic Items",
+      "is_qualified": true
+    },
+    {
+      "name": "Essential Oils (for medical care)",
+      "is_qualified": true
+    },
+    {
+      "name": "Exercise Ball",
+      "is_qualified": false
+    },
+    {
+      "name": "Exercise Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Expectorants",
+      "is_qualified": true
+    },
+    {
+      "name": "Expenses Not Incurred During The Coverage Period",
+      "is_qualified": false
+    },
+    {
+      "name": "Expenses Previously Reimbursed Under Another Health Plan",
+      "is_qualified": false
+    },
+    {
+      "name": "Experimental Drugs",
+      "is_qualified": true
+    },
+    {
+      "name": "Experimental Medical Services",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Drops (OTC)",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Drops (Rx)",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Exams",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Mask for Pain Relief",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Pressure Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Related Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Eye Treatment Medications",
+      "is_qualified": true
+    },
+    {
+      "name": "Eyeglass Accessories",
+      "is_qualified": true
+    },
+    {
+      "name": "Eyeglasses",
+      "is_qualified": true
+    },
+    {
+      "name": "Eyewear Repair Kit",
+      "is_qualified": true
+    },
+    {
+      "name": "Face Cream with Medication",
+      "is_qualified": true
+    },
+    {
+      "name": "Face Lift",
+      "is_qualified": false
+    },
+    {
+      "name": "Face Wash (Non-Medicated)",
+      "is_qualified": false
+    },
+    {
+      "name": "Facial Tissues",
+      "is_qualified": false
+    },
+    {
+      "name": "Feminine Hygiene Products",
+      "is_qualified": true
+    },
+    {
+      "name": "Feminine Pain Relief",
+      "is_qualified": true
+    },
+    {
+      "name": "Fenugreek Supplement",
+      "is_qualified": true
+    },
+    {
+      "name": "Fertility Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Fertility Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Fever Reducing Medications",
+      "is_qualified": true
+    },
+    {
+      "name": "Fiber Laxatives",
+      "is_qualified": true
+    },
+    {
+      "name": "Field Trips",
+      "is_qualified": false
+    },
+    {
+      "name": "Finance Charges",
+      "is_qualified": false
+    },
+    {
+      "name": "First Aid Adhesive",
+      "is_qualified": true
+    },
+    {
+      "name": "First Aid Cream",
+      "is_qualified": true
+    },
+    {
+      "name": "First Aid Drugs and Medicines",
+      "is_qualified": true
+    },
+    {
+      "name": "First Aid Kit",
+      "is_qualified": true
+    },
+    {
+      "name": "First Aid Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Fish Oil Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Fitness Programs",
+      "is_qualified": true
+    },
+    {
+      "name": "Fitness Tracker",
+      "is_qualified": true
+    },
+    {
+      "name": "Flu Shot",
+      "is_qualified": true
+    },
+    {
+      "name": "Fluoridation Services",
+      "is_qualified": true
+    },
+    {
+      "name": "Fluoride Rinse",
+      "is_qualified": true
+    },
+    {
+      "name": "Fluoride Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Foods",
+      "is_qualified": false
+    },
+    {
+      "name": "Foot Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Forehead Thermometer",
+      "is_qualified": true
+    },
+    {
+      "name": "Foreign Medical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Formula",
+      "is_qualified": false
+    },
+    {
+      "name": "Founder's Fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Fuel, Gasoline for Medical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Funeral Expenses",
+      "is_qualified": false
+    },
+    {
+      "name": "Gait Belt",
+      "is_qualified": true
+    },
+    {
+      "name": "Gambling Addiction Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Gas Relievers",
+      "is_qualified": true
+    },
+    {
+      "name": "Gastric Bypass Surgery Including Excess Skin Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Gastrointestinal Medication",
+      "is_qualified": true
+    },
+    {
+      "name": "Gauze",
+      "is_qualified": true
+    },
+    {
+      "name": "Gel Breast Pads",
+      "is_qualified": true
+    },
+    {
+      "name": "Genetic Testing",
+      "is_qualified": true
+    },
+    {
+      "name": "Gift Cards",
+      "is_qualified": false
+    },
+    {
+      "name": "Glasses",
+      "is_qualified": true
+    },
+    {
+      "name": "Glucosamine",
+      "is_qualified": true
+    },
+    {
+      "name": "Glucose Gel",
+      "is_qualified": true
+    },
+    {
+      "name": "Glucose Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Glucose Monitoring Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Glucose Tablets",
+      "is_qualified": true
+    },
+    {
+      "name": "Goggles",
+      "is_qualified": false
+    },
+    {
+      "name": "Grab Bars for Bathroom",
+      "is_qualified": true
+    },
+    {
+      "name": "Guards for Teeth Grinding",
+      "is_qualified": true
+    },
+    {
+      "name": "Guide Dog",
+      "is_qualified": true
+    },
+    {
+      "name": "Gynecologist",
+      "is_qualified": true
+    },
+    {
+      "name": "Hair Colorants",
+      "is_qualified": false
+    },
+    {
+      "name": "Hair Regrowth or Removal",
+      "is_qualified": false
+    },
+    {
+      "name": "Hair Removal",
+      "is_qualified": false
+    },
+    {
+      "name": "Hair Removal and Transplants",
+      "is_qualified": false
+    },
+    {
+      "name": "Half Way House",
+      "is_qualified": true
+    },
+    {
+      "name": "Hand Lotion Containing a Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Hand Sanitizer to Prevent COVID-19 (60%+ alcohol)",
+      "is_qualified": true
+    },
+    {
+      "name": "Hand Sanitizing Wipes to Prevent COVID-19",
+      "is_qualified": true
+    },
+    {
+      "name": "Handicap, Disability License Plates",
+      "is_qualified": true
+    },
+    {
+      "name": "Headache Medications",
+      "is_qualified": true
+    },
+    {
+      "name": "Health Club Dues and Fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Health Institute Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Health Insurance Premiums",
+      "is_qualified": false
+    },
+    {
+      "name": "Health Screenings",
+      "is_qualified": true
+    },
+    {
+      "name": "Hearing Aid Batteries",
+      "is_qualified": true
+    },
+    {
+      "name": "Hearing Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Heart Rate Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Heart Scan",
+      "is_qualified": true
+    },
+    {
+      "name": "Heated Neck Rest",
+      "is_qualified": true
+    },
+    {
+      "name": "Heating Pads",
+      "is_qualified": true
+    },
+    {
+      "name": "Hemorrhoid Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Herbal Medication",
+      "is_qualified": true
+    },
+    {
+      "name": "Herbs",
+      "is_qualified": true
+    },
+    {
+      "name": "HMO (Health Maintenance Organization)",
+      "is_qualified": false
+    },
+    {
+      "name": "Holistic Healers",
+      "is_qualified": true
+    },
+    {
+      "name": "Home Defibrillator",
+      "is_qualified": true
+    },
+    {
+      "name": "Home Diagnostic Kits, Tests, Devices",
+      "is_qualified": true
+    },
+    {
+      "name": "Home Health Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Home Improvements",
+      "is_qualified": true
+    },
+    {
+      "name": "Homeopathic Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Hormone Replacement Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Hospital Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Hospital Insurance Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Hospital Services and Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Hot and Cold Compress",
+      "is_qualified": true
+    },
+    {
+      "name": "Hot Packs",
+      "is_qualified": true
+    },
+    {
+      "name": "Hot Tub",
+      "is_qualified": false
+    },
+    {
+      "name": "Household Help",
+      "is_qualified": false
+    },
+    {
+      "name": "Housekeeper",
+      "is_qualified": false
+    },
+    {
+      "name": "Human Growth Hormone (HGH)",
+      "is_qualified": true
+    },
+    {
+      "name": "Human Guide",
+      "is_qualified": true
+    },
+    {
+      "name": "Humidifier",
+      "is_qualified": true
+    },
+    {
+      "name": "Hydrocortisone",
+      "is_qualified": true
+    },
+    {
+      "name": "Hydrogen Peroxide",
+      "is_qualified": true
+    },
+    {
+      "name": "Hydrotherapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Hyperbaric Oxygen Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Hyperbaric Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Hypnosis",
+      "is_qualified": true
+    },
+    {
+      "name": "Hysterectomy",
+      "is_qualified": true
+    },
+    {
+      "name": "Ibuprofen",
+      "is_qualified": true
+    },
+    {
+      "name": "Ileostomy Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Illegal Operations and Treatments",
+      "is_qualified": false
+    },
+    {
+      "name": "Immunizations",
+      "is_qualified": true
+    },
+    {
+      "name": "Immunotherapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Impotence Medicines and Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "In Vitro Fertilization (IVF)",
+      "is_qualified": true
+    },
+    {
+      "name": "Inclinator",
+      "is_qualified": true
+    },
+    {
+      "name": "Incontinence Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Indigestion Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Individual Insurance Premiums",
+      "is_qualified": false
+    },
+    {
+      "name": "Infant Formula",
+      "is_qualified": true
+    },
+    {
+      "name": "Infertility Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Injection Snoreplasty",
+      "is_qualified": true
+    },
+    {
+      "name": "Inpatient hospitalization services",
+      "is_qualified": true
+    },
+    {
+      "name": "Insect Bite Creams and Ointments",
+      "is_qualified": true
+    },
+    {
+      "name": "Insect Repellent",
+      "is_qualified": false
+    },
+    {
+      "name": "Insoles",
+      "is_qualified": true
+    },
+    {
+      "name": "Instant Ear Thermometer",
+      "is_qualified": true
+    },
+    {
+      "name": "Insulin",
+      "is_qualified": true
+    },
+    {
+      "name": "Insulin Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Insurance Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Inversion Table",
+      "is_qualified": true
+    },
+    {
+      "name": "Investigational Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Invisalign Orthodontics",
+      "is_qualified": true
+    },
+    {
+      "name": "Iron Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Isopropyl Alcohol",
+      "is_qualified": true
+    },
+    {
+      "name": "IV Equipment and Stands",
+      "is_qualified": true
+    },
+    {
+      "name": "Joint pain relievers",
+      "is_qualified": true
+    },
+    {
+      "name": "Joint Supplement (Glucosamine main ingredient or glucosamine only)",
+      "is_qualified": true
+    },
+    {
+      "name": "Kenalog Injections",
+      "is_qualified": true
+    },
+    {
+      "name": "Ketone Test Strips",
+      "is_qualified": true
+    },
+    {
+      "name": "Kids Training Pants",
+      "is_qualified": true
+    },
+    {
+      "name": "Kinesiology",
+      "is_qualified": true
+    },
+    {
+      "name": "Kinesiology Tape",
+      "is_qualified": true
+    },
+    {
+      "name": "Knee Wraps and Support",
+      "is_qualified": true
+    },
+    {
+      "name": "Lab Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Laboratory Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Lactaid Caplets",
+      "is_qualified": false
+    },
+    {
+      "name": "Lactation Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Lactation Consultant",
+      "is_qualified": true
+    },
+    {
+      "name": "Lactose Intolerance Medications",
+      "is_qualified": false
+    },
+    {
+      "name": "Lamaze Classes",
+      "is_qualified": true
+    },
+    {
+      "name": "Lancet",
+      "is_qualified": true
+    },
+    {
+      "name": "Language Training",
+      "is_qualified": true
+    },
+    {
+      "name": "Lanolin",
+      "is_qualified": true
+    },
+    {
+      "name": "Lap Band Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Laser Eye Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Laser Hair Removal",
+      "is_qualified": false
+    },
+    {
+      "name": "Lasik",
+      "is_qualified": true
+    },
+    {
+      "name": "Late Payment Provider Fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Late Pickup Fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Latex Gloves",
+      "is_qualified": false
+    },
+    {
+      "name": "Laxatives",
+      "is_qualified": true
+    },
+    {
+      "name": "Lead-Based Paint Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Learning Disability Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Legal Abortion",
+      "is_qualified": true
+    },
+    {
+      "name": "Legal Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Legal Fees in connection with fertility treatments",
+      "is_qualified": false
+    },
+    {
+      "name": "Lessons",
+      "is_qualified": true
+    },
+    {
+      "name": "Lice Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Life Alert Emergency Medical Alert System",
+      "is_qualified": true
+    },
+    {
+      "name": "Lifetime Care Advance Payment",
+      "is_qualified": false
+    },
+    {
+      "name": "Light Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Lip Balm (SPF 15+)",
+      "is_qualified": true
+    },
+    {
+      "name": "Liposuction",
+      "is_qualified": false
+    },
+    {
+      "name": "Lipstick",
+      "is_qualified": false
+    },
+    {
+      "name": "Liquid Adhesive for small cuts",
+      "is_qualified": true
+    },
+    {
+      "name": "Listening Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Lodging at a Medical Conference",
+      "is_qualified": false
+    },
+    {
+      "name": "Lodging for Medical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Lodging of a Companion",
+      "is_qualified": true
+    },
+    {
+      "name": "Long Term Care",
+      "is_qualified": false
+    },
+    {
+      "name": "Long Term Care Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Long Term Disability Insurance",
+      "is_qualified": false
+    },
+    {
+      "name": "Lotion",
+      "is_qualified": false
+    },
+    {
+      "name": "Lubricants",
+      "is_qualified": true
+    },
+    {
+      "name": "Lumbar Support",
+      "is_qualified": true
+    },
+    {
+      "name": "Magnetic Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Makeup",
+      "is_qualified": false
+    },
+    {
+      "name": "Mammogram",
+      "is_qualified": true
+    },
+    {
+      "name": "Marriage Counseling",
+      "is_qualified": false
+    },
+    {
+      "name": "Massage Chair",
+      "is_qualified": false
+    },
+    {
+      "name": "Massage Gun for Pain Relief",
+      "is_qualified": true
+    },
+    {
+      "name": "Massage Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Mastectomy-related Bras",
+      "is_qualified": true
+    },
+    {
+      "name": "Maternity Charges",
+      "is_qualified": true
+    },
+    {
+      "name": "Maternity Clothes",
+      "is_qualified": false
+    },
+    {
+      "name": "Maternity Support Belt",
+      "is_qualified": true
+    },
+    {
+      "name": "Mattress",
+      "is_qualified": false
+    },
+    {
+      "name": "Meals at a conference",
+      "is_qualified": false
+    },
+    {
+      "name": "Meals of a companion",
+      "is_qualified": false
+    },
+    {
+      "name": "Meals Outside of a Hospital",
+      "is_qualified": false
+    },
+    {
+      "name": "Medical Alert Bracelet",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical Care Outside the U.S.",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical conference admission, transportation, meals, etc",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical information Plan Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical Marijuana",
+      "is_qualified": false
+    },
+    {
+      "name": "Medical Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical Newsletter",
+      "is_qualified": false
+    },
+    {
+      "name": "Medical Records Charge",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical Testing Devices",
+      "is_qualified": true
+    },
+    {
+      "name": "Medical, Dental or Vision Office Visits",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicare Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicated Body or Face Wash",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicated Hand Cream",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicated Lip Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicated Shampoo",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicated Toothpaste",
+      "is_qualified": false
+    },
+    {
+      "name": "Medicine Droppers",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicines and Drugs that are Over-the-Counter (OTC)",
+      "is_qualified": true
+    },
+    {
+      "name": "Medicines Purchased from Other Countries",
+      "is_qualified": false
+    },
+    {
+      "name": "Medicines, Prescription",
+      "is_qualified": true
+    },
+    {
+      "name": "Mediscope",
+      "is_qualified": true
+    },
+    {
+      "name": "Melatonin",
+      "is_qualified": true
+    },
+    {
+      "name": "Menopause Treatment and Medical Services",
+      "is_qualified": true
+    },
+    {
+      "name": "Menstrual Pain Relievers",
+      "is_qualified": true
+    },
+    {
+      "name": "Mentally Handicapped, Special Home",
+      "is_qualified": true
+    },
+    {
+      "name": "Micro-Dermabrasion",
+      "is_qualified": false
+    },
+    {
+      "name": "Midwife Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Migraine Cooling Headache Pads",
+      "is_qualified": true
+    },
+    {
+      "name": "Migraine Relief (Medicated)",
+      "is_qualified": true
+    },
+    {
+      "name": "Mileage for Travel for Medical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Milk of Magnesia",
+      "is_qualified": true
+    },
+    {
+      "name": "Mineral Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Missed Appointment Fee",
+      "is_qualified": false
+    },
+    {
+      "name": "Mobility Scooter",
+      "is_qualified": true
+    },
+    {
+      "name": "Moisturizer",
+      "is_qualified": false
+    },
+    {
+      "name": "Mold Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Moleskin",
+      "is_qualified": true
+    },
+    {
+      "name": "Morning After Pill",
+      "is_qualified": true
+    },
+    {
+      "name": "Motion Sickness Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Motion Sickness Wristbands",
+      "is_qualified": true
+    },
+    {
+      "name": "Motorized Wheelchair",
+      "is_qualified": true
+    },
+    {
+      "name": "Mouth Wash",
+      "is_qualified": false
+    },
+    {
+      "name": "MRI",
+      "is_qualified": true
+    },
+    {
+      "name": "Multivitamins",
+      "is_qualified": true
+    },
+    {
+      "name": "Muscle pain relievers",
+      "is_qualified": true
+    },
+    {
+      "name": "Nail Polish",
+      "is_qualified": false
+    },
+    {
+      "name": "Nanny",
+      "is_qualified": false
+    },
+    {
+      "name": "Nasal Aspirator",
+      "is_qualified": true
+    },
+    {
+      "name": "Nasal Spray",
+      "is_qualified": true
+    },
+    {
+      "name": "Nasal Strips",
+      "is_qualified": true
+    },
+    {
+      "name": "Natural Lens Replacement",
+      "is_qualified": true
+    },
+    {
+      "name": "Naturopathic Healers",
+      "is_qualified": true
+    },
+    {
+      "name": "Nausea Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Nebulizer",
+      "is_qualified": true
+    },
+    {
+      "name": "Needle Container",
+      "is_qualified": true
+    },
+    {
+      "name": "Neti Pots",
+      "is_qualified": true
+    },
+    {
+      "name": "Neurologist",
+      "is_qualified": true
+    },
+    {
+      "name": "Newborn Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Newborn Nursing Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Nicotine Gum",
+      "is_qualified": true
+    },
+    {
+      "name": "Nicotine Patches",
+      "is_qualified": true
+    },
+    {
+      "name": "Night Mouth Guards",
+      "is_qualified": true
+    },
+    {
+      "name": "Nitrile Gloves",
+      "is_qualified": false
+    },
+    {
+      "name": "No Show Fee By Provider",
+      "is_qualified": false
+    },
+    {
+      "name": "Non-Prescription Drugs and Medicines",
+      "is_qualified": true
+    },
+    {
+      "name": "Norplant Insertion or Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Nose / Nasal Strips (for congestion relief)",
+      "is_qualified": true
+    },
+    {
+      "name": "Nursing Bra",
+      "is_qualified": true
+    },
+    {
+      "name": "Nursing Home",
+      "is_qualified": true
+    },
+    {
+      "name": "Nursing Services",
+      "is_qualified": true
+    },
+    {
+      "name": "Nursing Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Nutritional Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Nutritionist",
+      "is_qualified": true
+    },
+    {
+      "name": "OB/GYN",
+      "is_qualified": true
+    },
+    {
+      "name": "Obstetrical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Occlusal Guards",
+      "is_qualified": true
+    },
+    {
+      "name": "Occupational Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Omega-3 Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Oncologist",
+      "is_qualified": true
+    },
+    {
+      "name": "Online or Telephone Consultation, Medical Practitioner's Fee",
+      "is_qualified": true
+    },
+    {
+      "name": "Operations",
+      "is_qualified": true
+    },
+    {
+      "name": "Ophthalmologist",
+      "is_qualified": true
+    },
+    {
+      "name": "Optometrist",
+      "is_qualified": true
+    },
+    {
+      "name": "Oral Glucose Gel",
+      "is_qualified": true
+    },
+    {
+      "name": "Oral Remedies and Treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Organ Donation",
+      "is_qualified": true
+    },
+    {
+      "name": "Organ Transplant",
+      "is_qualified": true
+    },
+    {
+      "name": "Organic Food",
+      "is_qualified": false
+    },
+    {
+      "name": "Ortho Keratotomy or Orthokeratology",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthodontia",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthodontia Wax",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthokeratology",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthopedic and Surgical Supports",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthopedic Neck Support",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthopedic shoe inserts",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthopedic Shoes",
+      "is_qualified": true
+    },
+    {
+      "name": "Orthotics",
+      "is_qualified": true
+    },
+    {
+      "name": "OSHA Handling Fees for Biohazard Waste Disposal",
+      "is_qualified": true
+    },
+    {
+      "name": "Osteopath Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Ostomy, Colostomy Supplies",
+      "is_qualified": true
+    },
+    {
+      "name": "Oura Ring",
+      "is_qualified": true
+    },
+    {
+      "name": "Out-of-network provider",
+      "is_qualified": true
+    },
+    {
+      "name": "Over-The-Counter Items",
+      "is_qualified": true
+    },
+    {
+      "name": "Over-the-Counter Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Ovulation Monitor",
+      "is_qualified": true
+    },
+    {
+      "name": "Oxygen Equipment",
+      "is_qualified": true
+    },
+    {
+      "name": "Pads",
+      "is_qualified": true
+    },
+    {
+      "name": "Pain Relief Eye Mask",
+      "is_qualified": true
+    },
+    {
+      "name": "Pain Relievers",
+      "is_qualified": true
+    },
+    {
+      "name": "Paraffin Wax",
+      "is_qualified": false
+    },
+    {
+      "name": "Parking Fees for Medical Care or Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Particulate Respirator Mask to Prevent COVID-19",
+      "is_qualified": true
+    },
+    {
+      "name": "Pastoral Counseling",
+      "is_qualified": false
+    },
+    {
+      "name": "Paternity Testing",
+      "is_qualified": false
+    },
+    {
+      "name": "Patterning Exercises",
+      "is_qualified": true
+    },
+    {
+      "name": "Peak Flow Meter",
+      "is_qualified": true
+    },
+    {
+      "name": "Pedicure",
+      "is_qualified": false
+    },
+    {
+      "name": "Pedometer",
+      "is_qualified": true
+    },
+    {
+      "name": "Penile Implants",
+      "is_qualified": true
+    },
+    {
+      "name": "Perfume",
+      "is_qualified": false
+    },
+    {
+      "name": "Peroxide",
+      "is_qualified": true
+    },
+    {
+      "name": "Personal Protective Equipment (PPE) to Prevent COVID-19",
+      "is_qualified": true
+    },
+    {
+      "name": "Personal Trainer",
+      "is_qualified": true
+    },
+    {
+      "name": "PET Scan",
+      "is_qualified": true
+    },
+    {
+      "name": "Petroleum Jelly",
+      "is_qualified": true
+    },
+    {
+      "name": "Phototherapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Physical Exams",
+      "is_qualified": true
+    },
+    {
+      "name": "Physical Exams for Caregiver",
+      "is_qualified": false
+    },
+    {
+      "name": "Physical Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Physician Retainer Fee",
+      "is_qualified": false
+    },
+    {
+      "name": "Pill Boxes and Pill Clocks",
+      "is_qualified": true
+    },
+    {
+      "name": "Pill Cutters, Pill Boxes, Pill Sorters and Pill Organizers",
+      "is_qualified": true
+    },
+    {
+      "name": "Pillow for Lumbar Support",
+      "is_qualified": true
+    },
+    {
+      "name": "Pre-existing Condition",
+      "is_qualified": true
+    },
+    {
+      "name": "Pregnancy Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Pregnancy and Fertility Kits",
+      "is_qualified": true
+    },
+    {
+      "name": "Pregnancy Tests",
+      "is_qualified": true
+    },
+    {
+      "name": "Premiums",
+      "is_qualified": true
+    },
+    {
+      "name": "Prenatal Gummy Vitamins",
+      "is_qualified": true
+    },
+    {
+      "name": "Prenatal Ultrasound",
+      "is_qualified": true
+    },
+    {
+      "name": "Prenatal Vitamins",
+      "is_qualified": true
+    },
+    {
+      "name": "Prepayment of Medical Expenses",
+      "is_qualified": false
+    },
+    {
+      "name": "Preschool or Nursery School",
+      "is_qualified": false
+    },
+    {
+      "name": "Prescription Drug Discount Program",
+      "is_qualified": false
+    },
+    {
+      "name": "Prescription Drugs and Medicines",
+      "is_qualified": true
+    },
+    {
+      "name": "Prescription drugs and medicines obtained from other countries",
+      "is_qualified": true
+    },
+    {
+      "name": "Prescriptions",
+      "is_qualified": true
+    },
+    {
+      "name": "Preventive Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Preventive Care Screenings",
+      "is_qualified": true
+    },
+    {
+      "name": "Private hospital room",
+      "is_qualified": true
+    },
+    {
+      "name": "Probiotics",
+      "is_qualified": true
+    },
+    {
+      "name": "Progesterone and Testosterone Hormones",
+      "is_qualified": true
+    },
+    {
+      "name": "Prosthesis",
+      "is_qualified": true
+    },
+    {
+      "name": "Protective Face Mask to Prevent COVID-19",
+      "is_qualified": true
+    },
+    {
+      "name": "Protein Bars / Powders / Shakes",
+      "is_qualified": false
+    },
+    {
+      "name": "Proton Pump Inhibitors",
+      "is_qualified": true
+    },
+    {
+      "name": "Psychiatric care",
+      "is_qualified": true
+    },
+    {
+      "name": "Psychoanalysis",
+      "is_qualified": true
+    },
+    {
+      "name": "Psychologist",
+      "is_qualified": true
+    },
+    {
+      "name": "Pulse Oximeter",
+      "is_qualified": true
+    },
+    {
+      "name": "Pumice Stone",
+      "is_qualified": false
+    },
+    {
+      "name": "Q-tips",
+      "is_qualified": false
+    },
+    {
+      "name": "Radial Keratotomy",
+      "is_qualified": true
+    },
+    {
+      "name": "Radon Mitigation",
+      "is_qualified": true
+    },
+    {
+      "name": "Reading Glasses",
+      "is_qualified": true
+    },
+    {
+      "name": "Reasonable and Customary (R&C)",
+      "is_qualified": true
+    },
+    {
+      "name": "Recliner Chairs",
+      "is_qualified": false
+    },
+    {
+      "name": "Reflexology",
+      "is_qualified": true
+    },
+    {
+      "name": "Rehabilitation Center",
+      "is_qualified": true
+    },
+    {
+      "name": "Rehydration solution",
+      "is_qualified": true
+    },
+    {
+      "name": "Rental Cars",
+      "is_qualified": true
+    },
+    {
+      "name": "Retainer",
+      "is_qualified": true
+    },
+    {
+      "name": "Rhinoplasty",
+      "is_qualified": true
+    },
+    {
+      "name": "Rubbing Alcohol",
+      "is_qualified": true
+    },
+    {
+      "name": "Rubdowns",
+      "is_qualified": true
+    },
+    {
+      "name": "Safety Glasses",
+      "is_qualified": false
+    },
+    {
+      "name": "Sales Tax",
+      "is_qualified": true
+    },
+    {
+      "name": "Saline Nasal Spray",
+      "is_qualified": true
+    },
+    {
+      "name": "Sanitary Pads",
+      "is_qualified": true
+    },
+    {
+      "name": "Sanitizing Wipes for Surfaces to Prevent COVID-19",
+      "is_qualified": false
+    },
+    {
+      "name": "Sanitizing Wipes to Prevent COVID-19",
+      "is_qualified": true
+    },
+    {
+      "name": "Scale for Food or Weight",
+      "is_qualified": true
+    },
+    {
+      "name": "Scar Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Schools and education, residential",
+      "is_qualified": true
+    },
+    {
+      "name": "Schools and education, special",
+      "is_qualified": true
+    },
+    {
+      "name": "Sclerotherapy",
+      "is_qualified": false
+    },
+    {
+      "name": "Scooter, electric",
+      "is_qualified": true
+    },
+    {
+      "name": "Screening Tests",
+      "is_qualified": true
+    },
+    {
+      "name": "Sea-band for Motion Sickness",
+      "is_qualified": true
+    },
+    {
+      "name": "Sedatives",
+      "is_qualified": true
+    },
+    {
+      "name": "Seeing-eye Dog",
+      "is_qualified": true
+    },
+    {
+      "name": "Service Animal",
+      "is_qualified": true
+    },
+    {
+      "name": "Sexual Counseling",
+      "is_qualified": true
+    },
+    {
+      "name": "Sexual Dysfunction",
+      "is_qualified": true
+    },
+    {
+      "name": "Shampoo",
+      "is_qualified": false
+    },
+    {
+      "name": "Sharps Container",
+      "is_qualified": true
+    },
+    {
+      "name": "Shaving Cream or Lotion",
+      "is_qualified": false
+    },
+    {
+      "name": "Shipping Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Sinus Medicine",
+      "is_qualified": true
+    },
+    {
+      "name": "Sinus Rinse",
+      "is_qualified": true
+    },
+    {
+      "name": "Sitz Bath",
+      "is_qualified": true
+    },
+    {
+      "name": "Skin Moisturizer",
+      "is_qualified": false
+    },
+    {
+      "name": "Skin Tag Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Sleep Aids (OTC)",
+      "is_qualified": true
+    },
+    {
+      "name": "Sleep Deprivation Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Smoke Detector",
+      "is_qualified": false
+    },
+    {
+      "name": "Smoking Cessation Products",
+      "is_qualified": true
+    },
+    {
+      "name": "Smoking Cessation Programs",
+      "is_qualified": true
+    },
+    {
+      "name": "Soap",
+      "is_qualified": false
+    },
+    {
+      "name": "Somnoplasty",
+      "is_qualified": true
+    },
+    {
+      "name": "Special Foods",
+      "is_qualified": true
+    },
+    {
+      "name": "Special School",
+      "is_qualified": true
+    },
+    {
+      "name": "Speech Therapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Sperm Storage Fees (Long Term)",
+      "is_qualified": false
+    },
+    {
+      "name": "Sperm Storage Fees (Short Term)",
+      "is_qualified": true
+    },
+    {
+      "name": "Spermicidals",
+      "is_qualified": true
+    },
+    {
+      "name": "Spinal Decompression",
+      "is_qualified": true
+    },
+    {
+      "name": "Splints",
+      "is_qualified": true
+    },
+    {
+      "name": "St John's Wort",
+      "is_qualified": false
+    },
+    {
+      "name": "Stair Lift",
+      "is_qualified": true
+    },
+    {
+      "name": "Standing Desk",
+      "is_qualified": false
+    },
+    {
+      "name": "Steam Inhaler",
+      "is_qualified": true
+    },
+    {
+      "name": "Steam Packs",
+      "is_qualified": true
+    },
+    {
+      "name": "Stem Cell Storage",
+      "is_qualified": true
+    },
+    {
+      "name": "Sterilization",
+      "is_qualified": true
+    },
+    {
+      "name": "Stethoscope",
+      "is_qualified": true
+    },
+    {
+      "name": "Stool Softeners",
+      "is_qualified": true
+    },
+    {
+      "name": "Stop Smoking Program",
+      "is_qualified": true
+    },
+    {
+      "name": "Student Health Fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Sublingual Immunotherapy",
+      "is_qualified": true
+    },
+    {
+      "name": "Substance Abuse Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Subway Fare for Medical Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Summer Camps (Day Camp)",
+      "is_qualified": false
+    },
+    {
+      "name": "Summer Camps (Overnight)",
+      "is_qualified": false
+    },
+    {
+      "name": "Summer School",
+      "is_qualified": false
+    },
+    {
+      "name": "Sun Protective (SPF) Clothing",
+      "is_qualified": false
+    },
+    {
+      "name": "Sunburn Creams and Ointments",
+      "is_qualified": true
+    },
+    {
+      "name": "Sunglasses, prescription",
+      "is_qualified": true
+    },
+    {
+      "name": "Sunscreen",
+      "is_qualified": true
+    },
+    {
+      "name": "Sunscreen for Kids",
+      "is_qualified": true
+    },
+    {
+      "name": "Sunscreen for Wet Skin",
+      "is_qualified": false
+    },
+    {
+      "name": "Sunscreen with Insect Repellant",
+      "is_qualified": true
+    },
+    {
+      "name": "Suntan Lotion without sunscreen",
+      "is_qualified": false
+    },
+    {
+      "name": "Supplements",
+      "is_qualified": true
+    },
+    {
+      "name": "Supplies to treat a medical condition",
+      "is_qualified": true
+    },
+    {
+      "name": "Support Braces",
+      "is_qualified": true
+    },
+    {
+      "name": "Support Hose",
+      "is_qualified": true
+    },
+    {
+      "name": "Suppositories",
+      "is_qualified": true
+    },
+    {
+      "name": "Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Surrogate Mother",
+      "is_qualified": false
+    },
+    {
+      "name": "Swimming Lessons",
+      "is_qualified": false
+    },
+    {
+      "name": "Swimming Pool",
+      "is_qualified": true
+    },
+    {
+      "name": "Syringes",
+      "is_qualified": true
+    },
+    {
+      "name": "Tampons",
+      "is_qualified": true
+    },
+    {
+      "name": "Tanning Salons and Equipment",
+      "is_qualified": false
+    },
+    {
+      "name": "Tattoo Removal",
+      "is_qualified": false
+    },
+    {
+      "name": "Taxes on Medical Services and Products",
+      "is_qualified": true
+    },
+    {
+      "name": "Taxi Fare",
+      "is_qualified": true
+    },
+    {
+      "name": "Teeth Grinding Prevention",
+      "is_qualified": true
+    },
+    {
+      "name": "Teeth Whitening",
+      "is_qualified": false
+    },
+    {
+      "name": "Teething Pain Reliever",
+      "is_qualified": true
+    },
+    {
+      "name": "Telehealth",
+      "is_qualified": true
+    },
+    {
+      "name": "Telephone Consultation (Healthcare Professional Fee)",
+      "is_qualified": true
+    },
+    {
+      "name": "Telephone for Hearing Impaired Individual",
+      "is_qualified": true
+    },
+    {
+      "name": "Television for Hearing Impaired",
+      "is_qualified": false
+    },
+    {
+      "name": "TENS Machine",
+      "is_qualified": true
+    },
+    {
+      "name": "Testosterone",
+      "is_qualified": true
+    },
+    {
+      "name": "Therapy Eye Mask",
+      "is_qualified": true
+    },
+    {
+      "name": "Therapy, mental health",
+      "is_qualified": true
+    },
+    {
+      "name": "Thermography",
+      "is_qualified": true
+    },
+    {
+      "name": "Thermometer",
+      "is_qualified": true
+    },
+    {
+      "name": "Throat Lozenges",
+      "is_qualified": true
+    },
+    {
+      "name": "Toenail Fungus Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Toiletries",
+      "is_qualified": false
+    },
+    {
+      "name": "Tolls for Medical Care or Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Tooth Extraction",
+      "is_qualified": true
+    },
+    {
+      "name": "Toothache pain relievers",
+      "is_qualified": true
+    },
+    {
+      "name": "Toothbrush",
+      "is_qualified": false
+    },
+    {
+      "name": "Toothpaste",
+      "is_qualified": false
+    },
+    {
+      "name": "Topical Analgesics (Muscles and Arthritis)",
+      "is_qualified": true
+    },
+    {
+      "name": "Topical Skin Treatment",
+      "is_qualified": true
+    },
+    {
+      "name": "Topical Steroids",
+      "is_qualified": true
+    },
+    {
+      "name": "Tourniquet",
+      "is_qualified": true
+    },
+    {
+      "name": "Transcutaneous Electrical Nerve Stimulation Device",
+      "is_qualified": true
+    },
+    {
+      "name": "Transgender Counseling or Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Transitions Lenses",
+      "is_qualified": true
+    },
+    {
+      "name": "Transplant",
+      "is_qualified": true
+    },
+    {
+      "name": "Transportation costs of disabled individual commuting to and from work",
+      "is_qualified": false
+    },
+    {
+      "name": "Transportation expenses for person to receive medical care",
+      "is_qualified": true
+    },
+    {
+      "name": "Travel or Transportation for Medical Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Travel Sized Sunscreen",
+      "is_qualified": true
+    },
+    {
+      "name": "Treadmill",
+      "is_qualified": true
+    },
+    {
+      "name": "Tricare Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "Tubal ligation",
+      "is_qualified": true
+    },
+    {
+      "name": "Tuition",
+      "is_qualified": false
+    },
+    {
+      "name": "Tuition for Special Needs Schooling",
+      "is_qualified": true
+    },
+    {
+      "name": "Tuition, medical charges included",
+      "is_qualified": true
+    },
+    {
+      "name": "Turmeric (for medical use)",
+      "is_qualified": true
+    },
+    {
+      "name": "Tutoring",
+      "is_qualified": true
+    },
+    {
+      "name": "Tylenol",
+      "is_qualified": true
+    },
+    {
+      "name": "UCR, Charges Above",
+      "is_qualified": true
+    },
+    {
+      "name": "Ultrasound",
+      "is_qualified": true
+    },
+    {
+      "name": "Ultrasound, Prenatal",
+      "is_qualified": true
+    },
+    {
+      "name": "Umbilical cord blood storage",
+      "is_qualified": true
+    },
+    {
+      "name": "Upset Stomach Relief",
+      "is_qualified": true
+    },
+    {
+      "name": "Urinalysis",
+      "is_qualified": true
+    },
+    {
+      "name": "Urological Products",
+      "is_qualified": true
+    },
+    {
+      "name": "Used Needle Container",
+      "is_qualified": true
+    },
+    {
+      "name": "Usual and customary charges, excess",
+      "is_qualified": true
+    },
+    {
+      "name": "UV Protective Clothing",
+      "is_qualified": false
+    },
+    {
+      "name": "UVR treatments",
+      "is_qualified": true
+    },
+    {
+      "name": "Vacation",
+      "is_qualified": false
+    },
+    {
+      "name": "Vaccinations",
+      "is_qualified": true
+    },
+    {
+      "name": "Vaccine",
+      "is_qualified": true
+    },
+    {
+      "name": "Vapor Rub",
+      "is_qualified": true
+    },
+    {
+      "name": "Vaporizer",
+      "is_qualified": true
+    },
+    {
+      "name": "Varicose Vein Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Vasectomy and Vasectomy Reversal",
+      "is_qualified": true
+    },
+    {
+      "name": "Veneers",
+      "is_qualified": true
+    },
+    {
+      "name": "Veterinary fees",
+      "is_qualified": false
+    },
+    {
+      "name": "Viagra",
+      "is_qualified": true
+    },
+    {
+      "name": "Vision Correction",
+      "is_qualified": true
+    },
+    {
+      "name": "Vision Discount Programs",
+      "is_qualified": false
+    },
+    {
+      "name": "Visual Evoked Potential (VEP) Test",
+      "is_qualified": true
+    },
+    {
+      "name": "Vitamins",
+      "is_qualified": true
+    },
+    {
+      "name": "Walker",
+      "is_qualified": true
+    },
+    {
+      "name": "Walking Aids",
+      "is_qualified": true
+    },
+    {
+      "name": "Warranties",
+      "is_qualified": false
+    },
+    {
+      "name": "Wart Removal",
+      "is_qualified": true
+    },
+    {
+      "name": "Water Fluoridation",
+      "is_qualified": true
+    },
+    {
+      "name": "Water Resistant Sunscreen",
+      "is_qualified": true
+    },
+    {
+      "name": "Waterpik",
+      "is_qualified": true
+    },
+    {
+      "name": "Wax for Braces",
+      "is_qualified": true
+    },
+    {
+      "name": "Weight Loss Counseling",
+      "is_qualified": true
+    },
+    {
+      "name": "Weight Loss Drugs",
+      "is_qualified": true
+    },
+    {
+      "name": "Weight Loss Programs",
+      "is_qualified": true
+    },
+    {
+      "name": "Weight Loss Supplements",
+      "is_qualified": false
+    },
+    {
+      "name": "Weight Loss Surgery",
+      "is_qualified": true
+    },
+    {
+      "name": "Weighted Blanket",
+      "is_qualified": false
+    },
+    {
+      "name": "Wellness Scan",
+      "is_qualified": true
+    },
+    {
+      "name": "Wheelchair and Repairs",
+      "is_qualified": true
+    },
+    {
+      "name": "Whirlpool Baths",
+      "is_qualified": false
+    },
+    {
+      "name": "Whitening Strips",
+      "is_qualified": false
+    },
+    {
+      "name": "Wig",
+      "is_qualified": true
+    },
+    {
+      "name": "Wipes for Glasses",
+      "is_qualified": true
+    },
+    {
+      "name": "Wisdom Tooth Extraction",
+      "is_qualified": true
+    },
+    {
+      "name": "Wound Care",
+      "is_qualified": true
+    },
+    {
+      "name": "Wound Seal Powder",
+      "is_qualified": true
+    },
+    {
+      "name": "Wrinkle Cream",
+      "is_qualified": false
+    },
+    {
+      "name": "Wrist Support",
+      "is_qualified": true
+    },
+    {
+      "name": "X Rays",
+      "is_qualified": true
+    },
+    {
+      "name": "X-Ray Fees",
+      "is_qualified": true
+    },
+    {
+      "name": "X-Rays",
+      "is_qualified": true
+    },
+    {
+      "name": "Yeast Infection Medications",
+      "is_qualified": true
+    },
+    {
+      "name": "YMCA day camp",
+      "is_qualified": false
+    },
+    {
+      "name": "Yoga",
+      "is_qualified": true
+    },
+    {
+      "name": "Zinc Supplements",
+      "is_qualified": false
+    }
+  ],
+  "total": 898,
+  "qualified_count": 721,
+  "non_qualified_count": 177
+}
