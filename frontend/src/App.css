@@ -1,0 +1,271 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.App-header {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.App-header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 2.5rem;
+}
+
+.App-header p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 1.2rem;
+}
+
+.App-main {
+  padding: 0 2rem 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.message {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.step-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.step-container h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.info-card {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #3498db;
+}
+
+.info-card h3 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+}
+
+.info-card p {
+  margin: 0.5rem 0;
+  color: #5a6c7d;
+}
+
+.form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 200px;
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.reset-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 2rem;
+}
+
+.reset-btn:hover {
+  background: #c0392b;
+}
+
+/* Virtual Card Styling */
+.card-display {
+  margin: 2rem 0;
+}
+
+.virtual-card {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 400px;
+  margin: 0 auto;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.virtual-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.card-number {
+  font-size: 1.8rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.card-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.card-balance {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  background: rgba(255,255,255,0.2);
+  padding: 0.5rem;
+  border-radius: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Transaction Examples */
+.example-transactions {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.example-transactions h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.example {
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.example.qualified {
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+}
+
+.example.non-qualified {
+  background: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .App-main {
+    padding: 0 1rem 2rem;
+  }
+  
+  .step-container {
+    padding: 1.5rem;
+  }
+  
+  .App-header {
+    padding: 1.5rem;
+  }
+  
+  .App-header h1 {
+    font-size: 2rem;
+  }
+  
+  .virtual-card {
+    max-width: 100%;
+  }
+  
+  .card-number {
+    font-size: 1.4rem;
+  }
+  
+  .examples {
+    flex-direction: column;
+  }
+}
