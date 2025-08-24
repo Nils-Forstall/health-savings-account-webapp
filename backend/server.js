@@ -410,6 +410,45 @@ app.post('/api/expenses/validate', (req, res) => {
   });
 });
 
+let simplifiedExpenses = [];
+try {
+  const fs = require('fs');
+  const expenseData = JSON.parse(fs.readFileSync('./expenses-simplified.json', 'utf8'));
+  simplifiedExpenses = expenseData.expenses;
+  console.log(`Loaded ${simplifiedExpenses.length} simplified expenses for dropdown search`);
+} catch (err) {
+  console.error('Failed to load simplified expenses:', err);
+}
+
+app.get('/api/expenses/dropdown-search', (req, res) => {
+  const { q, limit = 20 } = req.query;
+
+  if (!q || q.length < 3) {
+    return res.status(400).json({ error: 'Search query must be at least 3 characters' });
+  }
+
+  const searchTerm = q.toLowerCase();
+  
+  const matches = simplifiedExpenses
+    .filter(expense => expense.name.toLowerCase().includes(searchTerm))
+    .sort((a, b) => {
+      const aStartsWith = a.name.toLowerCase().startsWith(searchTerm);
+      const bStartsWith = b.name.toLowerCase().startsWith(searchTerm);
+      
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      if (a.name.length !== b.name.length) return a.name.length - b.name.length;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, parseInt(limit));
+
+  res.json({
+    suggestions: matches,
+    count: matches.length,
+    total_available: simplifiedExpenses.length
+  });
+});
+
 app.get('/api/expenses/search', (req, res) => {
   const { q, qualified, category, limit = 50 } = req.query;
 
