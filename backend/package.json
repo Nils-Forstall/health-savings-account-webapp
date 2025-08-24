@@ -10,8 +10,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "chromedriver": "^139.0.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "selenium-webdriver": "^4.35.0",
     "sqlite3": "^5.1.7"
   }
 }
