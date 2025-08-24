@@ -53,6 +53,40 @@ db.serialize(() => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(card_id) REFERENCES virtual_cards(id)
   )`);
+
+  // Expense categories table for HSA validation
+  db.run(`CREATE TABLE IF NOT EXISTS expense_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Expenses table for HSA validation
+  db.run(`CREATE TABLE IF NOT EXISTS expenses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    category_id INTEGER,
+    is_qualified BOOLEAN NOT NULL,
+    keywords TEXT,
+    source_url TEXT,
+    raw_text TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(category_id) REFERENCES expense_categories(id)
+  )`);
+
+  // Create indexes for efficient querying
+  db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_name ON expenses(name)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_qualified ON expenses(is_qualified)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_keywords ON expenses(keywords)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id)`);
+
+  db.run(`INSERT OR IGNORE INTO expense_categories (name, description) VALUES 
+    ('HSA', 'Health Savings Account qualified expenses'),
+    ('FSA', 'Flexible Spending Account qualified expenses'),
+    ('DCFSA', 'Dependent Care Flexible Spending Account qualified expenses'),
+    ('LPFSA', 'Limited Purpose Flexible Spending Account qualified expenses'),
+    ('HRA', 'Health Reimbursement Account qualified expenses')`);
 });
 
 // Helper functions
@@ -173,74 +207,311 @@ app.post('/api/card/issue', (req, res) => {
   );
 });
 
-// 5. Process Transaction
+const validateExpense = (merchant, description, callback) => {
+  const searchTerms = `${merchant} ${description || ''}`.toLowerCase();
+  
+  db.get(
+    `SELECT e.*, ec.name as category_name 
+     FROM expenses e 
+     JOIN expense_categories ec ON e.category_id = ec.id 
+     WHERE LOWER(e.name) = LOWER(?) AND e.is_qualified = 1`,
+    [merchant],
+    (err, exactMatch) => {
+      if (err) {
+        return callback(err, null);
+      }
+      
+      if (exactMatch) {
+        return callback(null, {
+          isQualified: true,
+          matchType: 'exact',
+          matchedExpense: exactMatch.name,
+          category: exactMatch.category_name,
+          confidence: 1.0
+        });
+      }
+      
+      db.all(
+        `SELECT e.*, ec.name as category_name 
+         FROM expenses e 
+         JOIN expense_categories ec ON e.category_id = ec.id 
+         WHERE e.is_qualified = 1 AND (
+           LOWER(e.name) LIKE '%' || LOWER(?) || '%' OR
+           LOWER(e.keywords) LIKE '%' || LOWER(?) || '%' OR
+           LOWER(?) LIKE '%' || LOWER(e.name) || '%'
+         )
+         ORDER BY LENGTH(e.name) ASC
+         LIMIT 5`,
+        [searchTerms, searchTerms, searchTerms],
+        (err, keywordMatches) => {
+          if (err) {
+            return callback(err, null);
+          }
+          
+          if (keywordMatches.length > 0) {
+            const bestMatch = keywordMatches[0];
+            return callback(null, {
+              isQualified: true,
+              matchType: 'keyword',
+              matchedExpense: bestMatch.name,
+              category: bestMatch.category_name,
+              confidence: 0.8,
+              alternativeMatches: keywordMatches.slice(1).map(m => m.name)
+            });
+          }
+          
+          db.get(
+            `SELECT e.*, ec.name as category_name 
+             FROM expenses e 
+             JOIN expense_categories ec ON e.category_id = ec.id 
+             WHERE e.is_qualified = 0 AND (
+               LOWER(e.name) LIKE '%' || LOWER(?) || '%' OR
+               LOWER(?) LIKE '%' || LOWER(e.name) || '%'
+             )
+             ORDER BY LENGTH(e.name) ASC
+             LIMIT 1`,
+            [searchTerms, searchTerms],
+            (err, nonQualifiedMatch) => {
+              if (err) {
+                return callback(err, null);
+              }
+              
+              if (nonQualifiedMatch) {
+                return callback(null, {
+                  isQualified: false,
+                  matchType: 'non-qualified',
+                  matchedExpense: nonQualifiedMatch.name,
+                  category: nonQualifiedMatch.category_name,
+                  confidence: 0.7
+                });
+              }
+              
+              const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
+              const hasQualifiedKeyword = qualifiedKeywords.some(keyword => searchTerms.includes(keyword));
+              
+              callback(null, {
+                isQualified: hasQualifiedKeyword,
+                matchType: 'fallback',
+                matchedExpense: null,
+                category: null,
+                confidence: hasQualifiedKeyword ? 0.3 : 0.1,
+                reason: hasQualifiedKeyword ? 'Contains medical-related keywords' : 'No medical keywords found'
+              });
+            }
+          );
+        }
+      );
+    }
+  );
+};
+
+// 5. Process Transaction (Enhanced with database validation)
 app.post('/api/transaction/process', (req, res) => {
   console.log('Processing transaction:', req.body);
   const { cardNumber, amount, merchant, description } = req.body;
   
-  // Simple medical expense validation
-  const qualifiedMerchants = ['pharmacy', 'cvs', 'walgreens', 'hospital', 'clinic', 'doctor'];
-  const qualifiedKeywords = ['prescription', 'medical', 'dental', 'vision', 'doctor', 'hospital'];
-  
-  const isQualified = qualifiedMerchants.some(m => 
-    merchant.toLowerCase().includes(m)
-  ) || qualifiedKeywords.some(k => 
-    description.toLowerCase().includes(k)
-  );
-  
-  if (!isQualified) {
-    return res.json({
-      status: 'DECLINED',
-      reason: 'Not a qualified medical expense',
-      amount,
-      merchant
-    });
-  }
-  
-  // Check card exists and get HSA balance
-  db.get(`
-    SELECT vc.id as card_id, ha.balance 
-    FROM virtual_cards vc 
-    JOIN hsa_accounts ha ON vc.hsa_account_id = ha.id 
-    WHERE vc.card_number = ? AND vc.is_active = 1
-  `, [cardNumber], (err, row) => {
-    
-    if (err || !row) {
-      return res.json({
-        status: 'DECLINED',
-        reason: 'Invalid card',
-        amount,
-        merchant
-      });
+  validateExpense(merchant, description, (err, validation) => {
+    if (err) {
+      console.error('Validation error:', err);
+      // Fall back to simple validation
+      const qualifiedMerchants = ['pharmacy', 'cvs', 'walgreens', 'hospital', 'clinic', 'doctor'];
+      const qualifiedKeywords = ['prescription', 'medical', 'dental', 'vision', 'doctor', 'hospital'];
+      
+      const isQualified = qualifiedMerchants.some(m => 
+        merchant.toLowerCase().includes(m)
+      ) || qualifiedKeywords.some(k => 
+        description.toLowerCase().includes(k)
+      );
+      
+      validation = {
+        isQualified,
+        matchType: 'fallback',
+        confidence: 0.5,
+        reason: 'Database validation failed, used fallback logic'
+      };
     }
     
-    if (row.balance < amount) {
+    if (!validation.isQualified) {
       return res.json({
         status: 'DECLINED',
-        reason: 'Insufficient funds',
+        reason: 'Not a qualified medical expense',
         amount,
         merchant,
-        availableBalance: row.balance
+        validation
       });
     }
     
-    // Approve transaction and deduct from balance
-    const newBalance = row.balance - amount;
-    
-    db.run(`UPDATE hsa_accounts SET balance = ? WHERE id = (
-      SELECT hsa_account_id FROM virtual_cards WHERE card_number = ?
-    )`, [newBalance, cardNumber]);
-    
-    db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
-            VALUES (?, ?, ?, ?, 'APPROVED')`,
-      [row.card_id, amount, merchant, description]);
-    
+    // Check card exists and get HSA balance
+    db.get(`
+      SELECT vc.id as card_id, ha.balance 
+      FROM virtual_cards vc 
+      JOIN hsa_accounts ha ON vc.hsa_account_id = ha.id 
+      WHERE vc.card_number = ? AND vc.is_active = 1
+    `, [cardNumber], (err, row) => {
+      
+      if (err || !row) {
+        return res.json({
+          status: 'DECLINED',
+          reason: 'Invalid card',
+          amount,
+          merchant,
+          validation
+        });
+      }
+      
+      if (row.balance < amount) {
+        return res.json({
+          status: 'DECLINED',
+          reason: 'Insufficient funds',
+          amount,
+          merchant,
+          availableBalance: row.balance,
+          validation
+        });
+      }
+      
+      // Approve transaction and deduct from balance
+      const newBalance = row.balance - amount;
+      
+      db.run(`UPDATE hsa_accounts SET balance = ? WHERE id = (
+        SELECT hsa_account_id FROM virtual_cards WHERE card_number = ?
+      )`, [newBalance, cardNumber]);
+      
+      db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
+              VALUES (?, ?, ?, ?, 'APPROVED')`,
+        [row.card_id, amount, merchant, description]);
+      
+      res.json({
+        status: 'APPROVED',
+        amount,
+        merchant,
+        newBalance,
+        message: 'Transaction approved',
+        validation
+      });
+    });
+  });
+});
+
+// Expense validation API endpoints
+app.post('/api/expenses/validate', (req, res) => {
+  const { merchant, description } = req.body;
+
+  if (!merchant) {
+    return res.status(400).json({ error: 'Merchant name is required' });
+  }
+
+  validateExpense(merchant, description, (err, validation) => {
+    if (err) {
+      return res.status(500).json({ error: 'Validation failed' });
+    }
+
+    res.json(validation);
+  });
+});
+
+app.get('/api/expenses/search', (req, res) => {
+  const { q, qualified, category, limit = 50 } = req.query;
+
+  if (!q) {
+    return res.status(400).json({ error: 'Search query is required' });
+  }
+
+  let query = `
+    SELECT e.*, ec.name as category_name 
+    FROM expenses e 
+    JOIN expense_categories ec ON e.category_id = ec.id 
+    WHERE (LOWER(e.name) LIKE '%' || LOWER(?) || '%' OR LOWER(e.keywords) LIKE '%' || LOWER(?) || '%')
+  `;
+  let params = [q, q];
+
+  if (qualified !== undefined) {
+    query += ' AND e.is_qualified = ?';
+    params.push(qualified === 'true' ? 1 : 0);
+  }
+
+  if (category) {
+    query += ' AND ec.name = ?';
+    params.push(category);
+  }
+
+  query += ' ORDER BY LENGTH(e.name) ASC LIMIT ?';
+  params.push(parseInt(limit));
+
+  db.all(query, params, (err, expenses) => {
+    if (err) {
+      return res.status(500).json({ error: 'Search failed' });
+    }
+
     res.json({
-      status: 'APPROVED',
-      amount,
-      merchant,
-      newBalance,
-      message: 'Transaction approved'
+      expenses: expenses,
+      count: expenses.length
+    });
+  });
+});
+
+app.get('/api/expenses/categories', (req, res) => {
+  db.all('SELECT * FROM expense_categories ORDER BY name', (err, categories) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+
+    res.json(categories);
+  });
+});
+
+app.post('/api/expenses/populate', (req, res) => {
+  const { expenses } = req.body;
+
+  if (!expenses || !Array.isArray(expenses)) {
+    return res.status(400).json({ error: 'Expenses array is required' });
+  }
+
+  db.run('DELETE FROM expenses', (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to clear existing expenses' });
+    }
+
+    const stmt = db.prepare(`
+      INSERT INTO expenses (name, category_id, is_qualified, keywords, source_url, raw_text)
+      SELECT ?, ec.id, ?, ?, ?, ?
+      FROM expense_categories ec
+      WHERE ec.name = ?
+    `);
+
+    let insertCount = 0;
+    let errorCount = 0;
+
+    expenses.forEach(expense => {
+      const keywords = expense.name.toLowerCase().split(/\s+/).join(' ');
+      
+      stmt.run([
+        expense.name,
+        expense.is_qualified ? 1 : 0,
+        keywords,
+        expense.source_url || '',
+        expense.raw_text || expense.name,
+        expense.category || 'HSA'
+      ], (err) => {
+        if (err) {
+          errorCount++;
+        } else {
+          insertCount++;
+        }
+      });
+    });
+
+    stmt.finalize((err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to populate expenses' });
+      }
+
+      res.json({
+        message: 'Expenses populated successfully',
+        inserted: insertCount,
+        errors: errorCount,
+        total: expenses.length
+      });
     });
   });
 });
