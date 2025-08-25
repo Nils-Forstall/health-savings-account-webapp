@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
+import InfoTooltip from '../common/InfoTooltip';
 import { hsaService } from '../../services/hsaService';
 import { handleCurrencyInputChange } from '../../utils/currencyUtils';
 
@@ -119,10 +120,16 @@ const DepositModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast, 
                 border: '1px solid #e9ecef',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                justifyContent: 'space-between'
               }}>
-                {!isAmountValid && amount && <span>⚠️</span>}
-                Maximum deposit: ${contributionLimits.remainingLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (remaining annual limit)
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {!isAmountValid && amount && <span>⚠️</span>}
+                  Maximum deposit: ${contributionLimits.remainingLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+                <InfoTooltip 
+                  user={user}
+                  contributionLimits={contributionLimits}
+                />
               </div>
             )}
           </div>
