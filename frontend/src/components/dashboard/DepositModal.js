@@ -4,20 +4,24 @@ import { hsaService } from '../../services/hsaService';
 
 const DepositModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading, loading }) => {
   const [amount, setAmount] = useState('');
+  const [localMessage, setLocalMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setLocalMessage('');
 
     try {
       const response = await hsaService.deposit(user.userId, amount);
-      setMessage(`✅ Deposit successful! New balance: $${response.newBalance.toFixed(2)}`);
+      setLocalMessage(`✅ Deposit successful! New balance: $${response.newBalance.toFixed(2)}`);
       setAmount('');
       onSuccess(response.newBalance);
-      onClose();
+      setTimeout(() => {
+        setLocalMessage('');
+        onClose();
+      }, 2000);
     } catch (error) {
-      setMessage('❌ ' + (error.response?.data?.error || 'Deposit failed'));
+      setLocalMessage('❌ ' + (error.response?.data?.error || 'Deposit failed'));
     }
     
     setLoading(false);
@@ -25,12 +29,18 @@ const DepositModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading
 
   const handleClose = () => {
     setAmount('');
+    setLocalMessage('');
     onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Deposit Money">
       <form onSubmit={handleSubmit} className="form">
+        {localMessage && (
+          <div className={`message ${localMessage.includes('❌') ? 'error' : 'success'}`} style={{ marginBottom: '1rem' }}>
+            {localMessage}
+          </div>
+        )}
         <div className="form-group">
           <label>Amount ($):</label>
           <input
