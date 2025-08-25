@@ -128,29 +128,39 @@ function generateAccountNumber() {
   return 'HSA' + Math.random().toString().slice(2, 11);
 }
 
-function calculateContributionLimit(dateOfBirth, coverageType, year = new Date().getFullYear()) {
+// Helper function to determine if someone is catch-up eligible
+function isCatchUpEligible(dateOfBirth, year = new Date().getFullYear()) {
   const birthDate = new Date(dateOfBirth);
   const birthYear = birthDate.getFullYear();
   const age = year - birthYear;
   
-  console.log('Date parsing debug:', {
-    originalDateOfBirth: dateOfBirth,
-    parsedBirthDate: birthDate,
-    birthYear,
-    currentYear: year,
-    calculatedAge: age
-  });
-  
-  let baseLimit;
+  return age >= 55;
+}
+
+// Helper function to get base annual HSA contribution limit
+function getBaseAnnualLimit(coverageType, year = new Date().getFullYear()) {
   if (year === 2025) {
-    baseLimit = coverageType === 'family' ? 8550 : 4300;
+    return coverageType === 'family' ? 8550 : 4300;
   } else if (year === 2026) {
-    baseLimit = coverageType === 'family' ? 8750 : 4400;
+    return coverageType === 'family' ? 8750 : 4400;
   } else {
-    baseLimit = coverageType === 'family' ? 8750 : 4400;
+    return coverageType === 'family' ? 8750 : 4400;
   }
+}
+
+// Updated function that uses the separate helper functions
+function calculateContributionLimit(dateOfBirth, coverageType, year = new Date().getFullYear()) {
+  const baseLimit = getBaseAnnualLimit(coverageType, year);
+  const catchUpLimit = isCatchUpEligible(dateOfBirth, year) ? 1000 : 0;
   
-  const catchUpLimit = age >= 55 ? 1000 : 0;
+  console.log('Contribution limit calculation:', {
+    dateOfBirth,
+    coverageType,
+    year,
+    baseLimit,
+    catchUpLimit,
+    totalLimit: baseLimit + catchUpLimit
+  });
   
   return baseLimit + catchUpLimit;
 }
@@ -324,6 +334,8 @@ app.get('/api/hsa/contribution-limits/:userId', (req, res) => {
     }
     
     const currentYear = new Date().getFullYear();
+    const baseLimit = getBaseAnnualLimit(userData.coverage_type, currentYear);
+    const catchUpEligible = isCatchUpEligible(userData.date_of_birth, currentYear);
     const annualLimit = calculateContributionLimit(userData.date_of_birth, userData.coverage_type, currentYear);
     
     db.get(`SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?`, 
@@ -333,6 +345,9 @@ app.get('/api/hsa/contribution-limits/:userId', (req, res) => {
         
         res.json({
           annualLimit,
+          baseLimit,
+          catchUpEligible,
+          catchUpAmount: catchUpEligible ? 1000 : 0,
           currentContributions,
           remainingLimit,
           year: currentYear,
@@ -342,31 +357,43 @@ app.get('/api/hsa/contribution-limits/:userId', (req, res) => {
   });
 });
 
-// 3.1. Get HSA Contribution Limits
-app.get('/api/hsa/contribution-limits/:userId', (req, res) => {
+// 3.2. Check catch-up eligibility
+app.get('/api/hsa/catch-up-eligible/:userId', (req, res) => {
   const userId = req.params.userId;
+  const year = req.query.year ? parseInt(req.query.year) : new Date().getFullYear();
   
-  db.get(`SELECT u.date_of_birth, u.coverage_type FROM users u WHERE u.id = ?`, [userId], (err, userData) => {
+  db.get(`SELECT date_of_birth FROM users WHERE id = ?`, [userId], (err, userData) => {
     if (err || !userData) {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    const currentYear = new Date().getFullYear();
-    const annualLimit = calculateContributionLimit(userData.date_of_birth, userData.coverage_type, currentYear);
+    const eligible = isCatchUpEligible(userData.date_of_birth, year);
     
-    db.get(`SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?`, 
-      [userId, currentYear], (err, contributionData) => {
-        const currentContributions = contributionData ? contributionData.total_contributed : 0;
-        const remainingLimit = annualLimit - currentContributions;
-        
-        res.json({
-          annualLimit,
-          currentContributions,
-          remainingLimit,
-          year: currentYear,
-          coverageType: userData.coverage_type
-        });
-      });
+    res.json({
+      catchUpEligible: eligible,
+      catchUpAmount: eligible ? 1000 : 0,
+      year
+    });
+  });
+});
+
+// 3.3. Get base annual limit
+app.get('/api/hsa/base-limit/:userId', (req, res) => {
+  const userId = req.params.userId;
+  const year = req.query.year ? parseInt(req.query.year) : new Date().getFullYear();
+  
+  db.get(`SELECT coverage_type FROM users WHERE id = ?`, [userId], (err, userData) => {
+    if (err || !userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const baseLimit = getBaseAnnualLimit(userData.coverage_type, year);
+    
+    res.json({
+      baseLimit,
+      coverageType: userData.coverage_type,
+      year
+    });
   });
 });
 

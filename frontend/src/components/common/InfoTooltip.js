@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const InfoTooltip = ({ children, user, contributionLimits }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0, arrowLeft: 160 });
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0, arrowLeft: 160, isBelow: false });
 
   const iconStyle = {
     display: 'inline-flex',
@@ -24,19 +24,33 @@ const InfoTooltip = ({ children, user, contributionLimits }) => {
     if (!contributionLimits || !user) return '';
 
     const currentYear = new Date().getFullYear();
-    const userAge = user.dateOfBirth ? 
-      currentYear - new Date(user.dateOfBirth).getFullYear() : null;
-    
     const isFamily = contributionLimits.coverageType === 'family';
-    const annualLimit = isFamily ? 8300 : 4150;
-    const catchUpEligible = userAge && userAge >= 55;
-
-    let content = `This is your remaining annual HSA contribution limit for ${currentYear}. `;
-    content += `You have ${isFamily ? 'family' : 'individual'} coverage with an annual limit of $${annualLimit.toLocaleString()}.`;
     
-    if (catchUpEligible) {
-      content += ` Since you're 55 or older, you can contribute an additional $1,000 catch-up contribution.`;
+    // Determine catch-up eligibility from backend field or infer from limits
+    let catchUpEligible = contributionLimits.catchUpEligible;
+    if (catchUpEligible === undefined && contributionLimits.annualLimit) {
+      // Infer catch-up eligibility from the annual limit amount
+      const expectedBaseLimit = isFamily ? 8550 : 4300; // 2025 base limits
+      catchUpEligible = contributionLimits.annualLimit > expectedBaseLimit;
     }
+    
+    // Fallback logic for baseLimit if not provided by backend
+    let baseAnnualLimit = contributionLimits.baseLimit;
+    if (!baseAnnualLimit && contributionLimits.annualLimit) {
+      // Calculate base limit from total limit if baseLimit is missing
+      baseAnnualLimit = catchUpEligible ? contributionLimits.annualLimit - 1000 : contributionLimits.annualLimit;
+    }
+    
+    // Safety check
+    if (!baseAnnualLimit) {
+      return 'Unable to load contribution limit information.';
+    }
+
+    let content = `You have an annual HSA contribution limit of $${contributionLimits.annualLimit.toLocaleString()} for ${currentYear}.`;
+    
+    // if (catchUpEligible && contributionLimits.annualLimit) {
+    //   content += `\n\nSince you're 55 or older by the end of ${currentYear}, you can contribute an additional $1,000 for a total of $${contributionLimits.annualLimit.toLocaleString()}.`;
+    // }
 
     return content;
   };
@@ -46,14 +60,22 @@ const InfoTooltip = ({ children, user, contributionLimits }) => {
     
     const rect = iconElement.getBoundingClientRect();
     const tooltipWidth = 320;
-    const tooltipHeight = 80;
     
-    // Position tooltip above the question mark, with arrow pointing to center of icon
-    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
-    let top = rect.top - tooltipHeight - 8;
+    // Calculate content height dynamically based on text length
+    const content = getTooltipContent();
+    const lineHeight = 1.4;
+    const fontSize = 14;
+    const padding = 24; // 12px top + 12px bottom
+    const charsPerLine = Math.floor(tooltipWidth / (fontSize * 0.6)); // Approximate chars per line
+    const estimatedLines = Math.ceil(content.length / charsPerLine);
+    const tooltipHeight = Math.max(60, estimatedLines * fontSize * lineHeight + padding);
     
     // Store the original center position for the arrow
     const iconCenterX = rect.left + rect.width / 2;
+    
+    // Position tooltip above the question mark (anchored at bottom, growing upward)
+    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+    let top = rect.top - tooltipHeight - 8;
     
     // Keep tooltip in viewport horizontally
     if (left < 10) left = 10;
@@ -61,15 +83,17 @@ const InfoTooltip = ({ children, user, contributionLimits }) => {
       left = window.innerWidth - tooltipWidth - 10;
     }
     
-    // If tooltip would go above viewport, show it below instead
+    // Keep tooltip in viewport vertically - if it would go above viewport, position it below
+    let isBelow = false;
     if (top < 10) {
       top = rect.bottom + 8;
+      isBelow = true;
     }
     
     // Calculate arrow position relative to tooltip
     const arrowLeft = iconCenterX - left;
     
-    setTooltipPosition({ top, left, arrowLeft });
+    setTooltipPosition({ top, left, arrowLeft, isBelow });
   };
 
   const handleMouseEnter = (e) => {
@@ -104,23 +128,28 @@ const InfoTooltip = ({ children, user, contributionLimits }) => {
             fontSize: '14px',
             lineHeight: '1.4',
             width: '320px',
+            maxWidth: '320px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
             border: '1px solid #34495e',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            whiteSpace: 'pre-line'
           }}
         >
           {getTooltipContent()}
           <div
             style={{
               position: 'absolute',
-              top: '100%',
+              top: tooltipPosition.isBelow ? '-8px' : '100%',
               left: `${tooltipPosition.arrowLeft}px`,
               transform: 'translateX(-50%)',
               width: 0,
               height: 0,
               borderLeft: '8px solid transparent',
               borderRight: '8px solid transparent',
-              borderTop: '8px solid #2c3e50'
+              ...(tooltipPosition.isBelow 
+                ? { borderBottom: '8px solid #2c3e50' }
+                : { borderTop: '8px solid #2c3e50' }
+              )
             }}
           />
         </div>
