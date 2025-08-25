@@ -17,6 +17,12 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [proofFile, setProofFile] = useState(null);
   const [proofFileName, setProofFileName] = useState('');
+  
+  // Card validation fields
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiryMonth, setExpiryMonth] = useState('');
+  const [expiryYear, setExpiryYear] = useState('');
+  const [cvv, setCvv] = useState('');
 
   const validateAmount = (value) => {
     if (!value) {
@@ -87,24 +93,127 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     setProofFileName('');
   };
 
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return v;
+    }
+  };
+
+  const handleCardNumberChange = (e) => {
+    const formatted = formatCardNumber(e.target.value);
+    if (formatted.replace(/\s/g, '').length <= 16) {
+      setCardNumber(formatted);
+    }
+  };
+
+  const validateCardInfo = () => {
+    if (!cardNumber || !expiryMonth || !expiryYear || !cvv) {
+      setErrorMessage('Please fill in all card information fields');
+      addToast('❌ Please fill in all card information fields', 'error');
+      setStep('error');
+      return false;
+    }
+
+    const cleanCardNumber = cardNumber.replace(/\s/g, '');
+    if (!/^\d{16}$/.test(cleanCardNumber)) {
+      setErrorMessage('Please enter a valid 16-digit card number');
+      addToast('❌ Please enter a valid 16-digit card number', 'error');
+      setStep('error');
+      return false;
+    }
+
+    const month = parseInt(expiryMonth);
+    const year = parseInt(expiryYear);
+    if (month < 1 || month > 12) {
+      setErrorMessage('Please enter a valid expiry month (1-12)');
+      addToast('❌ Please enter a valid expiry month (1-12)', 'error');
+      setStep('error');
+      return false;
+    }
+    if (year < new Date().getFullYear()) {
+      setErrorMessage('Card appears to be expired');
+      addToast('❌ Card appears to be expired', 'error');
+      setStep('error');
+      return false;
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      setErrorMessage('Please enter a valid CVV (3-4 digits)');
+      addToast('❌ Please enter a valid CVV (3-4 digits)', 'error');
+      setStep('error');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate that a qualified expense was selected
+
+    // Validate card information
+    if (!validateCardInfo()) {
+      return;
+    }
 
     setStep('loading');
     
     // Simulate loading for 0.3 seconds
     setTimeout(async () => {
       try {
-        const response = await hsaService.withdraw(user.userId, amount, reason);
+        const cleanCardNumber = cardNumber.replace(/\s/g, '');
+        const response = await hsaService.withdraw(user.userId, amount, reason, cleanCardNumber, expiryMonth, expiryYear, cvv);
         setResult(response);
         onSuccess(response.newBalance);
         addToast(`💸 Successfully reimbursed $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
         handleClose();
       } catch (error) {
-        setErrorMessage(error.response?.data?.error || 'Reimbursement failed');
-        addToast(`❌ ${error.response?.data?.error || 'Reimbursement failed'}`, 'error');
+        console.error('Withdrawal error:', error);
+        
+        // Extract detailed error information
+        const errorData = error.response?.data;
+        let detailedMessage = 'Withdrawal failed';
+        
+        if (errorData?.error) {
+          if (errorData.error.includes('Invalid card')) {
+            detailedMessage = 'Invalid card information. Please check your card number, expiry date, and CVV.';
+          } else if (errorData.error.includes('Card not found')) {
+            detailedMessage = 'Card not found. Please verify your card details.';
+          } else if (errorData.error.includes('Card expired')) {
+            detailedMessage = 'Card has expired. Please use a valid card.';
+          } else if (errorData.error.includes('Insufficient funds')) {
+            detailedMessage = `Insufficient funds. Available balance: $${errorData.availableBalance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'Unknown'}`;
+          } else if (errorData.error.includes('HSA account not found')) {
+            detailedMessage = 'HSA account not found. Please contact support.';
+          } else if (errorData.error.includes('Valid user ID and positive amount are required')) {
+            detailedMessage = 'Invalid withdrawal amount. Please enter a valid positive amount.';
+          } else if (errorData.error.includes('Failed to process withdrawal')) {
+            detailedMessage = 'Transaction processing failed. Please try again or contact support.';
+          } else {
+            detailedMessage = errorData.error;
+          }
+        } else if (error.response?.status === 400) {
+          detailedMessage = 'Invalid withdrawal request. Please check your input and try again.';
+        } else if (error.response?.status === 404) {
+          detailedMessage = 'Account not found. Please contact support.';
+        } else if (error.response?.status >= 500) {
+          detailedMessage = 'Server error. Please try again later or contact support.';
+        } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+          detailedMessage = 'Network error. Please check your connection and try again.';
+        }
+        
+        setErrorMessage(detailedMessage);
+        addToast(`❌ ${detailedMessage}`, 'error');
         setStep('error');
       }
     }, 300);
@@ -118,8 +227,19 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     setExpenseOptions([]);
     setProofFile(null);
     setProofFileName('');
+    setCardNumber('');
+    setExpiryMonth('');
+    setExpiryYear('');
+    setCvv('');
     setStep('form');
     setResult(null);
+    setErrorMessage('');
+    onClose();
+  };
+
+  const handleCloseFromError = () => {
+    // Only clear the step and error message, keep form data intact
+    setStep('form');
     setErrorMessage('');
     onClose();
   };
@@ -142,6 +262,120 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     <Modal isOpen={isOpen} onClose={step === 'loading' ? null : handleClose} title={getModalTitle()}>
       {step === 'form' && (
         <form onSubmit={handleSubmit} className="form">
+          <div className="form-group">
+            <label>Card Information:</label>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                fontSize: '14px',
+                fontWeight: '500'
+              }}>
+                Card Number
+              </label>
+              <input
+                type="text"
+                value={cardNumber}
+                onChange={handleCardNumberChange}
+                placeholder="1234 5678 9012 3456"
+                required
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #e9ecef',
+                  borderRadius: '4px',
+                  fontSize: '1rem',
+                  boxSizing: 'border-box',
+                  fontFamily: 'monospace'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}>
+                  Expiry Month
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="12"
+                  value={expiryMonth}
+                  onChange={(e) => setExpiryMonth(e.target.value)}
+                  placeholder="MM"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #e9ecef',
+                    borderRadius: '4px',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}>
+                  Expiry Year
+                </label>
+                <input
+                  type="number"
+                  min={new Date().getFullYear()}
+                  max={new Date().getFullYear() + 10}
+                  value={expiryYear}
+                  onChange={(e) => setExpiryYear(e.target.value)}
+                  placeholder="YYYY"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #e9ecef',
+                    borderRadius: '4px',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}>
+                  CVV
+                </label>
+                <input
+                  type="text"
+                  maxLength="4"
+                  value={cvv}
+                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
+                  placeholder="123"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #e9ecef',
+                    borderRadius: '4px',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                    fontFamily: 'monospace'
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          
           <div className="form-group">
             <label>Amount ($):</label>
             <input
@@ -415,7 +649,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
             <button onClick={handleTryAgain} className="secondary-btn">
               Try Again
             </button>
-            <button onClick={handleClose} className="primary-btn">
+            <button onClick={handleCloseFromError} className="primary-btn">
               Close
             </button>
           </div>
