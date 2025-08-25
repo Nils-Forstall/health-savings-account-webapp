@@ -14,92 +14,173 @@ const ContributionLimitsModal = ({ isOpen, onClose, contributionData, user }) =>
   } = contributionData;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="HSA Contribution Limits Explained">
-      <div style={{ lineHeight: '1.6', color: '#333' }}>
-        <h4 style={{ marginTop: '0', marginBottom: '1rem', color: '#007bff' }}>
-          Your {year} HSA Contribution Limits
-        </h4>
-        
+    <Modal isOpen={isOpen} onClose={onClose} title="HSA Contribution Limits">
+      <div style={{ lineHeight: '1.5', color: '#333', textAlign: 'left' }}>
+        {/* Main Contribution Limit Display */}
         <div style={{ 
-          padding: '1rem', 
-          backgroundColor: '#f8f9fa', 
-          borderRadius: '8px', 
-          marginBottom: '1.5rem',
-          border: '1px solid #dee2e6'
+          padding: '1.5rem', 
+          backgroundColor: '#f8fffe', 
+          borderRadius: '12px', 
+          marginBottom: '2rem',
+          border: '2px solid #10b981',
+          textAlign: 'center'
         }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
+          <h2 style={{ 
+            margin: '0 0 0.5rem 0', 
+            fontSize: '2rem', 
+            fontWeight: '700',
+            color: '#065f46'
+          }}>
+            ${annualLimit.toLocaleString()}
+          </h2>
+          <p style={{ 
+            margin: '0', 
+            fontSize: '1.1rem', 
+            color: '#047857',
+            fontWeight: '500'
+          }}>
+            Your {year} Annual Contribution Limit
+          </p>
+          {catchUpEligible && (
+            <p style={{ 
+              margin: '0.5rem 0 0 0', 
+              fontSize: '0.9rem', 
+              color: '#059669'
+            }}>
+              Includes $1,000 catch-up contribution (age 55+)
+            </p>
+          )}
+        </div>
+
+        {/* Breakdown Section */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ 
+            margin: '0 0 1rem 0', 
+            fontSize: '1.3rem', 
+            fontWeight: '600',
+            color: '#1f2937'
+          }}>
+            How This Amount is Calculated
+          </h3>
+          
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '1rem',
+            backgroundColor: '#f9fafb',
+            borderRadius: '8px',
+            marginBottom: '1rem'
+          }}>
             <div>
-              <strong>Coverage Type:</strong> {coverageType === 'family' ? 'Family' : 'Individual'}
+              <div style={{ fontSize: '1rem', fontWeight: '500', color: '#374151' }}>
+                Base Limit ({coverageType === 'family' ? 'Family' : 'Individual'} Coverage)
+              </div>
+              <div style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                {year} IRS limit for {coverageType} coverage
+              </div>
             </div>
-            <div>
-              <strong>Base Limit:</strong> ${baseLimit.toLocaleString()}
+            <div style={{ fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>
+              ${baseLimit.toLocaleString()}
             </div>
-            <div>
-              <strong>Catch-up Eligible:</strong> {catchUpEligible ? 'Yes (55+)' : 'No'}
+          </div>
+
+          {catchUpEligible && (
+            <>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '1rem',
+                backgroundColor: '#fef3c7',
+                borderRadius: '8px',
+                marginBottom: '1rem'
+              }}>
+                <div>
+                  <div style={{ fontSize: '1rem', fontWeight: '500', color: '#92400e' }}>
+                    Catch-up Contribution
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: '#a16207', marginTop: '0.25rem' }}>
+                    Available because you're 55 or older
+                  </div>
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: '600', color: '#92400e' }}>
+                  +${catchUpAmount.toLocaleString()}
+                </div>
+              </div>
+              
+              <div style={{ 
+                borderTop: '2px solid #e5e7eb',
+                paddingTop: '1rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1f2937' }}>
+                  Total Annual Limit
+                </div>
+                <div style={{ fontSize: '1.3rem', fontWeight: '700', color: '#065f46' }}>
+                  ${annualLimit.toLocaleString()}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Key Information */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ 
+            margin: '0 0 1rem 0', 
+            fontSize: '1.3rem', 
+            fontWeight: '600',
+            color: '#1f2937'
+          }}>
+            Key Information
+          </h3>
+          
+          <div style={{ 
+            display: 'grid', 
+            gap: '0.75rem',
+            fontSize: '0.95rem',
+            lineHeight: '1.4'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <span style={{ color: '#ef4444', marginRight: '0.5rem', fontWeight: 'bold' }}>⚠️</span>
+              <span>Contributions must be made by tax filing deadline (typically April 15th)</span>
             </div>
-            <div>
-              <strong>Total Annual Limit:</strong> ${annualLimit.toLocaleString()}
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <span style={{ color: '#f59e0b', marginRight: '0.5rem', fontWeight: 'bold' }}>📅</span>
+              <span>Catch-up eligibility based on turning 55 by December 31st of contribution year</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <span style={{ color: '#ef4444', marginRight: '0.5rem', fontWeight: 'bold' }}>💰</span>
+              <span>Exceeding limits may result in tax penalties</span>
             </div>
           </div>
         </div>
 
-        <h5 style={{ marginBottom: '0.75rem', color: '#495057' }}>How Your Limits Are Calculated</h5>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
-          <p style={{ margin: '0 0 0.75rem 0' }}>
-            <strong>Base Contribution Limit ({year}):</strong>
-          </p>
-          <ul style={{ margin: '0 0 1rem 0', paddingLeft: '1.5rem' }}>
-            <li>Individual coverage: $4,300</li>
-            <li>Family coverage: $8,550</li>
-          </ul>
-          <p style={{ margin: '0', fontSize: '0.85rem', color: '#6c757d' }}>
-            Your limit is <strong>${baseLimit.toLocaleString()}</strong> because you have <strong>{coverageType}</strong> coverage.
-          </p>
-        </div>
-
-        {catchUpEligible && (
-          <div style={{ marginBottom: '1.5rem' }}>
-            <p style={{ margin: '0 0 0.75rem 0' }}>
-              <strong>Catch-up Contribution:</strong>
-            </p>
-            <p style={{ margin: '0 0 0.75rem 0' }}>
-              Since you're 55 or older, you're eligible for an additional <strong>${catchUpAmount.toLocaleString()}</strong> catch-up contribution.
-            </p>
-            <p style={{ margin: '0', fontSize: '0.85rem', color: '#6c757d' }}>
-              Total limit: ${baseLimit.toLocaleString()} + ${catchUpAmount.toLocaleString()} = <strong>${annualLimit.toLocaleString()}</strong>
-            </p>
-          </div>
-        )}
-
-        <h5 style={{ marginBottom: '0.75rem', color: '#495057' }}>Important Notes</h5>
-        
-        <ul style={{ margin: '0 0 1.5rem 0', paddingLeft: '1.5rem' }}>
-          <li style={{ marginBottom: '0.5rem' }}>
-            These limits are set annually by the IRS and may change each year
-          </li>
-          <li style={{ marginBottom: '0.5rem' }}>
-            Contributions must be made by the tax filing deadline (typically April 15th)
-          </li>
-          <li style={{ marginBottom: '0.5rem' }}>
-            Catch-up contributions are available if you turn 55 by December 31st of the contribution year
-          </li>
-          <li style={{ marginBottom: '0.5rem' }}>
-            Exceeding contribution limits may result in tax penalties
-          </li>
-        </ul>
-
+        {/* Pro Tip */}
         <div style={{ 
-          padding: '1rem', 
-          backgroundColor: '#e7f3ff', 
+          padding: '1.25rem', 
+          backgroundColor: '#eff6ff', 
           borderRadius: '8px', 
-          border: '1px solid #b3d9ff',
-          fontSize: '0.85rem'
+          border: '1px solid #3b82f6',
+          marginBottom: '1.5rem'
         }}>
-          <strong>💡 Pro Tip:</strong> HSA contributions are tax-deductible, grow tax-free, and can be withdrawn tax-free for qualified medical expenses, making HSAs one of the most tax-advantaged accounts available.
+          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '1.2rem', marginRight: '0.75rem' }}>💡</span>
+            <div>
+              <div style={{ fontWeight: '600', color: '#1e40af', marginBottom: '0.5rem' }}>
+                Triple Tax Advantage
+              </div>
+              <div style={{ fontSize: '0.9rem', color: '#1e40af' }}>
+                HSA contributions are tax-deductible, grow tax-free, and withdrawals for qualified medical expenses are tax-free.
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+        <div style={{ textAlign: 'right' }}>
           <button onClick={onClose} className="primary-btn">
             Got it!
           </button>

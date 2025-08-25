@@ -66,48 +66,51 @@ const Dashboard = ({
           border: '2px solid #e9ecef'
         }}>
           <div style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 'bold', 
-            color: '#28a745',
-            marginBottom: '1rem',
-            fontFamily: 'monospace'
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '1rem'
           }}>
-            ${hsaAccount?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
-          </div>
-          <div style={{ 
-            fontSize: '0.9rem', 
-            color: '#6c757d',
-            fontWeight: '500'
-          }}>
-            Account: {hsaAccount?.account_number || hsaAccount?.accountNumber || 'Not Available'}
+            <div>
+              <div style={{ 
+                fontSize: '1.5rem', 
+                fontWeight: 'bold', 
+                color: '#28a745',
+                marginBottom: '0.5rem',
+                fontFamily: 'monospace'
+              }}>
+                ${hsaAccount?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+              </div>
+              <div style={{ 
+                fontSize: '0.9rem', 
+                color: '#6c757d',
+                fontWeight: '500'
+              }}>
+                Account: {hsaAccount?.account_number || hsaAccount?.accountNumber || 'Not Available'}
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsWithdrawModalOpen(true)} 
+              className="primary-btn"
+              disabled={loading}
+              style={{
+                fontSize: '0.9rem',
+                padding: '0.5rem 1rem'
+              }}
+            >
+              💸 Withdraw Money
+            </button>
           </div>
         </div>
       </div>
 
-      <ContributionLimits user={user} refreshTrigger={contributionRefreshTrigger} />
-
-      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem', justifyContent: 'center' }}>
-        <button 
-          onClick={() => setIsDepositModalOpen(true)} 
-          className="primary-btn"
-          disabled={isDepositDisabled}
-          style={{
-            opacity: isDepositDisabled ? 0.5 : 1,
-            cursor: isDepositDisabled ? 'not-allowed' : 'pointer',
-            backgroundColor: isDepositDisabled ? '#6c757d' : undefined
-          }}
-          title={contributionLimits && contributionLimits.remainingLimit <= 0 ? 'Annual contribution limit reached' : undefined}
-        >
-          💰 Deposit Money
-        </button>
-        <button 
-          onClick={() => setIsWithdrawModalOpen(true)} 
-          className="primary-btn"
-          disabled={loading}
-        >
-          💸 Withdraw Money
-        </button>
-      </div>
+      <ContributionLimits 
+        user={user} 
+        refreshTrigger={contributionRefreshTrigger}
+        onDepositClick={() => setIsDepositModalOpen(true)}
+        isDepositDisabled={isDepositDisabled}
+        loading={loading}
+      />
 
       <TransactionHistory transactions={transactions} />
 
