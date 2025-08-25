@@ -5,7 +5,9 @@ const SignUpForm = ({ onSuccess, onSwitchToLogin, setMessage, setLoading, loadin
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    dateOfBirth: '',
+    coverageType: 'individual'
   });
 
   const handleInputChange = (e) => {
@@ -21,7 +23,7 @@ const SignUpForm = ({ onSuccess, onSwitchToLogin, setMessage, setLoading, loadin
     setMessage('');
 
     try {
-      const user = await authService.createUser(formData.name, formData.email, formData.password);
+      const user = await authService.createUser(formData.name, formData.email, formData.password, formData.dateOfBirth, formData.coverageType);
       setMessage('✅ User account created successfully!');
       onSuccess(user);
     } catch (error) {
@@ -64,6 +66,28 @@ const SignUpForm = ({ onSuccess, onSwitchToLogin, setMessage, setLoading, loadin
             onChange={handleInputChange}
             required
           />
+        </div>
+        <div className="form-group">
+          <label>Date of Birth:</label>
+          <input
+            type="date"
+            name="dateOfBirth"
+            value={formData.dateOfBirth}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Coverage Type:</label>
+          <select
+            name="coverageType"
+            value={formData.coverageType}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="individual">Individual</option>
+            <option value="family">Family</option>
+          </select>
         </div>
         <button type="submit" disabled={loading} className="primary-btn">
           {loading ? 'Creating Account...' : 'Sign Up'}
