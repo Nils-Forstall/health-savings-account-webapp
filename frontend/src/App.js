@@ -83,11 +83,6 @@ function App() {
         <h1>🛡️ ForsShield</h1>
         <p>Your Health Savings Account Management Platform</p>
         
-        {isAuthenticated && (
-          <button onClick={handleLogout} className="reset-btn" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-            Logout
-          </button>
-        )}
         
       </header>
 
@@ -132,6 +127,7 @@ function App() {
             addToast={addToast}
             setLoading={setLoading}
             loading={loading}
+            onLogout={handleLogout}
           />
         )}
       </main>
