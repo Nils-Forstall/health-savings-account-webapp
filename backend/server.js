@@ -29,7 +29,8 @@ db.serialize(() => {
     not_dependent BOOLEAN,
     insurance_card_front TEXT,
     insurance_card_back TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME
   )`);
   
   db.run(`CREATE TABLE IF NOT EXISTS hsa_accounts (
@@ -97,6 +98,13 @@ db.serialize(() => {
   db.run(`ALTER TABLE transactions ADD COLUMN hsa_account_id INTEGER REFERENCES hsa_accounts(id)`, (err) => {
     if (err && !err.message.includes('duplicate column name')) {
       console.log('Note: hsa_account_id column may already exist or there was an error:', err.message);
+    }
+  });
+
+  // Add last_login column to existing users table if it doesn't exist
+  db.run(`ALTER TABLE users ADD COLUMN last_login DATETIME`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.log('Note: last_login column may already exist or there was an error:', err.message);
     }
   });
 
@@ -263,7 +271,7 @@ app.post('/api/users/login', (req, res) => {
     return res.status(400).json({ error: 'Email and password are required' });
   }
   
-  db.get(`SELECT id, first_name, last_name, email FROM users WHERE email = ? AND password = ?`, 
+  db.get(`SELECT id, first_name, last_name, email, last_login FROM users WHERE email = ? AND password = ?`, 
     [email, password], 
     (err, user) => {
       if (err) {
@@ -275,12 +283,22 @@ app.post('/api/users/login', (req, res) => {
         return res.status(401).json({ error: 'Invalid email or password' });
       }
       
+      const isFirstLogin = !user.last_login;
       const fullName = `${user.first_name} ${user.last_name}`;
-      console.log('User logged in:', user.id);
+      
+      // Update last_login timestamp
+      db.run(`UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?`, [user.id], (updateErr) => {
+        if (updateErr) {
+          console.log('Error updating last_login:', updateErr);
+        }
+      });
+      
+      console.log('User logged in:', user.id, 'First login:', isFirstLogin);
       res.json({ 
         userId: user.id, 
         name: fullName, 
         email: user.email,
+        isFirstLogin,
         message: 'Login successful' 
       });
     }

@@ -15,6 +15,8 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
   const [result, setResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isAmountValid, setIsAmountValid] = useState(true);
+  const [proofFile, setProofFile] = useState(null);
+  const [proofFileName, setProofFileName] = useState('');
 
   const validateAmount = (value) => {
     if (!value) {
@@ -59,6 +61,32 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     setShowDropdown(false);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (limit to 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        addToast('❌ File size must be less than 10MB', 'error');
+        return;
+      }
+      
+      // Check file type (images and PDFs only)
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        addToast('❌ Only images (JPEG, PNG, GIF) and PDF files are allowed', 'error');
+        return;
+      }
+      
+      setProofFile(file);
+      setProofFileName(file.name);
+    }
+  };
+
+  const removeProofFile = () => {
+    setProofFile(null);
+    setProofFileName('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -94,6 +122,8 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     setSelectedExpense(null);
     setShowDropdown(false);
     setExpenseOptions([]);
+    setProofFile(null);
+    setProofFileName('');
     setStep('form');
     setResult(null);
     setErrorMessage('');
@@ -152,31 +182,33 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
               </div>
             )}
           </div>
-          <div className="form-group" style={{ position: 'relative' }}>
+          <div className="form-group">
             <label>Reason for withdrawal:</label>
-            <input
-              type="text"
-              value={reason}
-              onChange={(e) => handleReasonChange(e.target.value)}
-              onFocus={() => reason.length >= 3 && setShowDropdown(expenseOptions.length > 0)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-              placeholder="Type at least 3 characters to search HSA expenses..."
-              required
-            />
-            {showDropdown && expenseOptions.length > 0 && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                backgroundColor: 'white',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                maxHeight: '200px',
-                overflowY: 'auto',
-                zIndex: 1000
-              }}>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                value={reason}
+                onChange={(e) => handleReasonChange(e.target.value)}
+                onFocus={() => reason.length >= 3 && setShowDropdown(expenseOptions.length > 0)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                placeholder="Type at least 3 characters to search HSA expenses..."
+                required
+              />
+              {showDropdown && expenseOptions.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  backgroundColor: 'white',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                  zIndex: 9999,
+                  marginTop: '2px'
+                }}>
                 {expenseOptions.map((expense, index) => (
                   <div
                     key={index}
@@ -186,38 +218,134 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                       borderBottom: index < expenseOptions.length - 1 ? '1px solid #eee' : 'none',
                       display: 'flex',
                       justifyContent: 'space-between',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                      transition: 'background-color 0.1s ease'
                     }}
                     onMouseDown={() => selectReason(expense)}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f5f5f5'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                   >
                     <span>{expense.name}</span>
-                    <span style={{
-                      fontSize: '12px',
-                      padding: '2px 6px',
-                      borderRadius: '3px',
-                      backgroundColor: expense.is_qualified ? '#d4edda' : '#f8d7da',
-                      color: expense.is_qualified ? '#155724' : '#721c24'
-                    }}>
-                      {expense.is_qualified ? '✓ Qualified' : '✗ Not Qualified'}
+                    <span 
+                      style={{
+                        fontSize: '12px',
+                        padding: '2px 6px',
+                        borderRadius: '3px',
+                        backgroundColor: expense.is_qualified === true ? '#d4edda' : '#f8d7da',
+                        color: expense.is_qualified === true ? '#155724' : '#721c24',
+                        border: expense.is_qualified === true ? '1px solid #c3e6cb' : '1px solid #f5c6cb',
+                        fontWeight: '500',
+                        pointerEvents: 'none'
+                      }}
+                    >
+                      {expense.is_qualified === true ? '✓ Qualified' : '✗ Not Qualified'}
                     </span>
                   </div>
                 ))}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
+            <div style={{ 
+              fontSize: '13px', 
+              color: '#6c757d',
+              marginTop: '6px',
+              lineHeight: '1.4'
+            }}>
+              Only HSA-qualified medical expenses are allowed (prescriptions, doctor visits, medical equipment, etc.)
+            </div>
             {selectedExpense && (
               <div style={{
                 marginTop: '8px',
                 padding: '8px',
                 borderRadius: '4px',
-                backgroundColor: selectedExpense.is_qualified ? '#d4edda' : '#f8d7da',
-                color: selectedExpense.is_qualified ? '#155724' : '#721c24',
-                fontSize: '14px'
+                backgroundColor: selectedExpense.is_qualified === true ? '#d4edda' : '#f8d7da',
+                color: selectedExpense.is_qualified === true ? '#155724' : '#721c24',
+                fontSize: '14px',
+                border: selectedExpense.is_qualified === true ? '1px solid #c3e6cb' : '1px solid #f5c6cb',
+                fontWeight: '500'
               }}>
-                Selected: {selectedExpense.name} - {selectedExpense.is_qualified ? 'HSA Qualified ✓' : 'Not HSA Qualified ✗'}
+                Selected: {selectedExpense.name} - {selectedExpense.is_qualified === true ? 'HSA Qualified ✓' : 'Not HSA Qualified ✗'}
               </div>
             )}
+          </div>
+          
+          <div className="form-group">
+            <label>Proof of Expense (Optional):</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                id="proof-upload"
+              />
+              <label
+                htmlFor="proof-upload"
+                style={{
+                  display: 'inline-block',
+                  padding: '8px 16px',
+                  backgroundColor: '#f8f9fa',
+                  border: '2px dashed #dee2e6',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#e9ecef';
+                  e.target.style.borderColor = '#adb5bd';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#f8f9fa';
+                  e.target.style.borderColor = '#dee2e6';
+                }}
+              >
+                📎 Click to upload receipt or proof (Images or PDF, max 10MB)
+              </label>
+              
+              <div style={{ 
+                fontSize: '13px', 
+                color: '#6c757d',
+                marginTop: '6px',
+                lineHeight: '1.4'
+              }}>
+                💡 Upload receipts, invoices, or other documentation to support your withdrawal
+              </div>
+              
+              {proofFileName && (
+                <div style={{
+                  marginTop: '8px',
+                  padding: '8px',
+                  backgroundColor: '#d4edda',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                  color: '#155724'
+                }}>
+                  <span>📄 {proofFileName}</span>
+                  <button
+                    type="button"
+                    onClick={removeProofFile}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#721c24',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      padding: '0 4px'
+                    }}
+                    title="Remove file"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between' }}>
             <button type="button" onClick={handleClose} className="secondary-btn">

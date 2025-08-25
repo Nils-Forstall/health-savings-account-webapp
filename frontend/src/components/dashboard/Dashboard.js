@@ -53,7 +53,9 @@ const Dashboard = ({
 
   return (
     <div>
-      <h2 style={{ marginBottom: '2rem', textAlign: 'left' }}>Welcome back, {user?.name}!</h2>
+      <h2 style={{ marginBottom: '2rem', textAlign: 'left' }}>
+        {user?.isFirstLogin ? `Welcome, ${user?.name}!` : `Welcome back, ${user?.name}!`}
+      </h2>
       
       <div>
         <h3 style={{ textAlign: 'left' }}>Current Balance</h3>
