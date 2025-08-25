@@ -751,9 +751,112 @@ app.post('/api/card/issue-for-user', (req, res) => {
   });
 });
 
+// Load scraped expenses data for enhanced validation
+let scrapedExpenses = { qualified: [], non_qualified: [] };
+try {
+  const fs = require('fs');
+  const expenseData = JSON.parse(fs.readFileSync('./scraped-expenses-final.json', 'utf8'));
+  scrapedExpenses.qualified = expenseData.qualified || [];
+  scrapedExpenses.non_qualified = expenseData.non_qualified || [];
+  console.log(`Loaded ${scrapedExpenses.qualified.length} qualified and ${scrapedExpenses.non_qualified.length} non-qualified expenses`);
+} catch (err) {
+  console.error('Failed to load scraped expenses:', err);
+}
+
+// Helper function to calculate string similarity (Levenshtein distance based)
+const calculateSimilarity = (str1, str2) => {
+  const s1 = str1.toLowerCase().trim();
+  const s2 = str2.toLowerCase().trim();
+  
+  if (s1 === s2) return 1.0;
+  
+  // Check for exact substring matches
+  if (s1.includes(s2) || s2.includes(s1)) {
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+    return shorter.length / longer.length;
+  }
+  
+  // Simple word overlap scoring
+  const words1 = s1.split(/\s+/).filter(w => w.length > 2);
+  const words2 = s2.split(/\s+/).filter(w => w.length > 2);
+  
+  if (words1.length === 0 || words2.length === 0) return 0;
+  
+  const commonWords = words1.filter(w1 => words2.some(w2 => w1.includes(w2) || w2.includes(w1)));
+  return commonWords.length / Math.max(words1.length, words2.length);
+};
+
 const validateExpense = (merchant, description, callback) => {
   const searchTerms = `${merchant} ${description || ''}`.toLowerCase();
+  const descriptionOnly = (description || '').toLowerCase().trim();
+  const merchantOnly = merchant.toLowerCase().trim();
   
+  // Priority 1: Exact description match in scraped qualified expenses
+  const exactDescriptionMatch = scrapedExpenses.qualified.find(expense => 
+    expense.name.toLowerCase() === descriptionOnly && descriptionOnly.length > 0
+  );
+  
+  if (exactDescriptionMatch) {
+    return callback(null, {
+      isQualified: true,
+      matchType: 'exact-description',
+      matchedExpense: exactDescriptionMatch.name,
+      category: exactDescriptionMatch.category,
+      confidence: 1.0,
+      source: 'scraped-data'
+    });
+  }
+  
+  // Priority 2: High similarity description match (>0.8 similarity)
+  let bestDescriptionMatch = null;
+  let bestDescriptionScore = 0;
+  
+  if (descriptionOnly.length > 2) {
+    scrapedExpenses.qualified.forEach(expense => {
+      const similarity = calculateSimilarity(descriptionOnly, expense.name);
+      if (similarity > bestDescriptionScore && similarity > 0.8) {
+        bestDescriptionScore = similarity;
+        bestDescriptionMatch = expense;
+      }
+    });
+  }
+  
+  if (bestDescriptionMatch) {
+    return callback(null, {
+      isQualified: true,
+      matchType: 'high-similarity-description',
+      matchedExpense: bestDescriptionMatch.name,
+      category: bestDescriptionMatch.category,
+      confidence: bestDescriptionScore,
+      source: 'scraped-data'
+    });
+  }
+  
+  // Priority 3: Merchant + description combined matching in scraped data
+  let bestCombinedMatch = null;
+  let bestCombinedScore = 0;
+  
+  scrapedExpenses.qualified.forEach(expense => {
+    const similarity = calculateSimilarity(searchTerms, expense.name);
+    if (similarity > bestCombinedScore && similarity > 0.7) {
+      bestCombinedScore = similarity;
+      bestCombinedMatch = expense;
+    }
+  });
+  
+  if (bestCombinedMatch) {
+    return callback(null, {
+      isQualified: true,
+      matchType: 'combined-similarity',
+      matchedExpense: bestCombinedMatch.name,
+      category: bestCombinedMatch.category,
+      confidence: bestCombinedScore,
+      source: 'scraped-data'
+    });
+  }
+  
+  // Priority 4: Database exact match (existing logic)
   db.get(
     `SELECT e.*, ec.name as category_name 
      FROM expenses e 
@@ -768,13 +871,15 @@ const validateExpense = (merchant, description, callback) => {
       if (exactMatch) {
         return callback(null, {
           isQualified: true,
-          matchType: 'exact',
+          matchType: 'exact-db',
           matchedExpense: exactMatch.name,
           category: exactMatch.category_name,
-          confidence: 1.0
+          confidence: 1.0,
+          source: 'database'
         });
       }
       
+      // Priority 5: Database keyword matching
       db.all(
         `SELECT e.*, ec.name as category_name 
          FROM expenses e 
@@ -796,14 +901,33 @@ const validateExpense = (merchant, description, callback) => {
             const bestMatch = keywordMatches[0];
             return callback(null, {
               isQualified: true,
-              matchType: 'keyword',
+              matchType: 'keyword-db',
               matchedExpense: bestMatch.name,
               category: bestMatch.category_name,
               confidence: 0.8,
+              source: 'database',
               alternativeMatches: keywordMatches.slice(1).map(m => m.name)
             });
           }
           
+          // Priority 6: Check for non-qualified matches in scraped data
+          const nonQualifiedMatch = scrapedExpenses.non_qualified.find(expense => {
+            const similarity = calculateSimilarity(searchTerms, expense.name);
+            return similarity > 0.8;
+          });
+          
+          if (nonQualifiedMatch) {
+            return callback(null, {
+              isQualified: false,
+              matchType: 'non-qualified-scraped',
+              matchedExpense: nonQualifiedMatch.name,
+              category: nonQualifiedMatch.category,
+              confidence: 0.8,
+              source: 'scraped-data'
+            });
+          }
+          
+          // Priority 7: Database non-qualified check
           db.get(
             `SELECT e.*, ec.name as category_name 
              FROM expenses e 
@@ -823,14 +947,16 @@ const validateExpense = (merchant, description, callback) => {
               if (nonQualifiedMatch) {
                 return callback(null, {
                   isQualified: false,
-                  matchType: 'non-qualified',
+                  matchType: 'non-qualified-db',
                   matchedExpense: nonQualifiedMatch.name,
                   category: nonQualifiedMatch.category_name,
-                  confidence: 0.7
+                  confidence: 0.7,
+                  source: 'database'
                 });
               }
               
-              const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'dr.', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
+              // Priority 8: Fallback keyword logic
+              const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens', 'medicine', 'medication', 'drug'];
               const hasQualifiedKeyword = qualifiedKeywords.some(keyword => searchTerms.includes(keyword));
               
               callback(null, {
@@ -839,6 +965,7 @@ const validateExpense = (merchant, description, callback) => {
                 matchedExpense: null,
                 category: null,
                 confidence: hasQualifiedKeyword ? 0.3 : 0.1,
+                source: 'fallback',
                 reason: hasQualifiedKeyword ? 'Contains medical-related keywords' : 'No medical keywords found'
               });
             }
