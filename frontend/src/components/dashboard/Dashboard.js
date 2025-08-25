@@ -82,6 +82,7 @@ const Dashboard = ({
         isOpen={isDepositModalOpen}
         onClose={() => setIsDepositModalOpen(false)}
         user={user}
+        hsaAccount={hsaAccount}
         onSuccess={handleDepositSuccess}
         addToast={addToast}
         setLoading={setLoading}
@@ -92,6 +93,7 @@ const Dashboard = ({
         isOpen={isWithdrawModalOpen}
         onClose={() => setIsWithdrawModalOpen(false)}
         user={user}
+        hsaAccount={hsaAccount}
         onSuccess={handleWithdrawSuccess}
         addToast={addToast}
         setLoading={setLoading}

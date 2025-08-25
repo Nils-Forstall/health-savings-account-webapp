@@ -257,6 +257,62 @@ app.get('/api/hsa/:userId', (req, res) => {
   });
 });
 
+// 3.1. Get HSA Contribution Limits
+app.get('/api/hsa/contribution-limits/:userId', (req, res) => {
+  const userId = req.params.userId;
+  
+  db.get(`SELECT u.date_of_birth, u.coverage_type FROM users u WHERE u.id = ?`, [userId], (err, userData) => {
+    if (err || !userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const currentYear = new Date().getFullYear();
+    const annualLimit = calculateContributionLimit(userData.date_of_birth, userData.coverage_type, currentYear);
+    
+    db.get(`SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?`, 
+      [userId, currentYear], (err, contributionData) => {
+        const currentContributions = contributionData ? contributionData.total_contributed : 0;
+        const remainingLimit = annualLimit - currentContributions;
+        
+        res.json({
+          annualLimit,
+          currentContributions,
+          remainingLimit,
+          year: currentYear,
+          coverageType: userData.coverage_type
+        });
+      });
+  });
+});
+
+// 3.1. Get HSA Contribution Limits
+app.get('/api/hsa/contribution-limits/:userId', (req, res) => {
+  const userId = req.params.userId;
+  
+  db.get(`SELECT u.date_of_birth, u.coverage_type FROM users u WHERE u.id = ?`, [userId], (err, userData) => {
+    if (err || !userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const currentYear = new Date().getFullYear();
+    const annualLimit = calculateContributionLimit(userData.date_of_birth, userData.coverage_type, currentYear);
+    
+    db.get(`SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?`, 
+      [userId, currentYear], (err, contributionData) => {
+        const currentContributions = contributionData ? contributionData.total_contributed : 0;
+        const remainingLimit = annualLimit - currentContributions;
+        
+        res.json({
+          annualLimit,
+          currentContributions,
+          remainingLimit,
+          year: currentYear,
+          coverageType: userData.coverage_type
+        });
+      });
+  });
+});
+
 // 3.5. Deposit to HSA Account
 app.post('/api/hsa/deposit', (req, res) => {
   console.log('HSA deposit:', req.body);

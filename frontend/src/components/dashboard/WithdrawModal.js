@@ -4,7 +4,7 @@ import { hsaService } from '../../services/hsaService';
 import { handleCurrencyInputChange } from '../../utils/currencyUtils';
 import axios from 'axios';
 
-const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, loading }) => {
+const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast, setLoading, loading }) => {
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState('');
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -14,6 +14,22 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading,
   const [step, setStep] = useState('form'); // 'form', 'loading', 'confirmation', 'error'
   const [result, setResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isAmountValid, setIsAmountValid] = useState(true);
+
+  const validateAmount = (value) => {
+    if (!value) {
+      setIsAmountValid(true);
+      return;
+    }
+    const numValue = parseFloat(value);
+    const maxWithdrawal = hsaAccount?.balance || 0;
+    setIsAmountValid(numValue > 0 && numValue <= maxWithdrawal);
+  };
+
+  const handleAmountChange = (e) => {
+    const newAmount = handleCurrencyInputChange(e, setAmount);
+    validateAmount(e.target.value);
+  };
 
   const handleReasonChange = async (value) => {
     setReason(value);
@@ -108,11 +124,33 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading,
               type="text"
               inputMode="decimal"
               value={amount}
-              onChange={(e) => handleCurrencyInputChange(e, setAmount)}
+              onChange={handleAmountChange}
               placeholder="0.00"
               required
               autoFocus
+              style={{
+                color: !isAmountValid && amount ? '#dc3545' : 'inherit',
+                borderColor: !isAmountValid && amount ? '#dc3545' : 'inherit'
+              }}
             />
+            {hsaAccount?.balance !== undefined && (
+              <div style={{ 
+                fontSize: '14px', 
+                color: !isAmountValid && amount ? '#dc3545' : '#000',
+                marginTop: '6px',
+                fontWeight: '500',
+                padding: '4px 8px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '4px',
+                border: '1px solid #e9ecef',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                {!isAmountValid && amount && <span>⚠️</span>}
+                Available balance: ${hsaAccount.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+            )}
           </div>
           <div className="form-group" style={{ position: 'relative' }}>
             <label>Reason for withdrawal:</label>
@@ -125,11 +163,6 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading,
               placeholder="Type at least 3 characters to search HSA expenses..."
               required
             />
-            {searchLoading && (
-              <div style={{ padding: '8px', fontSize: '14px', color: '#666' }}>
-                {/* Searching... */}
-              </div>
-            )}
             {showDropdown && expenseOptions.length > 0 && (
               <div style={{
                 position: 'absolute',

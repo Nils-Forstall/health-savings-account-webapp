@@ -52,5 +52,10 @@ export const hsaService = {
       description
     });
     return response.data;
+  },
+
+  getContributionLimits: async (userId) => {
+    const response = await axios.get(`${API_BASE}/hsa/contribution-limits/${userId}`);
+    return response.data;
   }
 };
