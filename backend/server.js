@@ -703,17 +703,91 @@ const validateExpense = (merchant, description, callback) => {
                 });
               }
               
-              const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
-              const hasQualifiedKeyword = qualifiedKeywords.some(keyword => searchTerms.includes(keyword));
+              const pharmacyMerchants = ['walgreens', 'cvs', 'pharmacy', 'rite aid', 'duane reade'];
+              const isPharmacyMerchant = pharmacyMerchants.some(pharmacy => 
+                merchant.toLowerCase().includes(pharmacy)
+              );
               
-              callback(null, {
-                isQualified: hasQualifiedKeyword,
-                matchType: 'fallback',
-                matchedExpense: null,
-                category: null,
-                confidence: hasQualifiedKeyword ? 0.3 : 0.1,
-                reason: hasQualifiedKeyword ? 'Contains medical-related keywords' : 'No medical keywords found'
-              });
+              if (isPharmacyMerchant) {
+                const commonNonMedicalItems = [
+                  'candy', 'chocolate', 'gum', 'chips', 'snacks', 'soda', 'drinks', 'beverage',
+                  'makeup', 'lipstick', 'mascara', 'foundation', 'nail polish', 'perfume', 'cologne',
+                  'toys', 'games', 'magazines', 'newspapers', 'greeting cards', 'gift cards',
+                  'batteries', 'phone charger', 'electronics', 'household items', 'cleaning supplies'
+                ];
+                
+                const hasNonMedicalKeyword = commonNonMedicalItems.some(item => 
+                  searchTerms.toLowerCase().includes(item.toLowerCase())
+                );
+                
+                if (hasNonMedicalKeyword) {
+                  const matchedKeyword = commonNonMedicalItems.find(item => 
+                    searchTerms.toLowerCase().includes(item.toLowerCase())
+                  );
+                  return callback(null, {
+                    isQualified: false,
+                    matchType: 'pharmacy-non-medical-keyword',
+                    matchedExpense: matchedKeyword,
+                    category: 'Non-medical',
+                    confidence: 0.9,
+                    reason: `Non-medical item detected at pharmacy: ${matchedKeyword}`
+                  });
+                }
+                
+                db.all(
+                  `SELECT e.*, ec.name as category_name 
+                   FROM expenses e 
+                   JOIN expense_categories ec ON e.category_id = ec.id 
+                   WHERE e.is_qualified = 0 AND (
+                     LOWER(?) LIKE '%' || LOWER(e.name) || '%' OR
+                     LOWER(e.keywords) LIKE '%' || LOWER(?) || '%'
+                   )
+                   ORDER BY LENGTH(e.name) DESC
+                   LIMIT 3`,
+                  [searchTerms, searchTerms],
+                  (err, nonQualifiedMatches) => {
+                    if (err) {
+                      return callback(err, null);
+                    }
+                    
+                    if (nonQualifiedMatches.length > 0) {
+                      const bestMatch = nonQualifiedMatches[0];
+                      return callback(null, {
+                        isQualified: false,
+                        matchType: 'pharmacy-non-qualified',
+                        matchedExpense: bestMatch.name,
+                        category: bestMatch.category_name,
+                        confidence: 0.8,
+                        reason: `Non-medical item detected at pharmacy: ${bestMatch.name}`
+                      });
+                    }
+                    
+                    const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
+                    const hasQualifiedKeyword = qualifiedKeywords.some(keyword => searchTerms.includes(keyword));
+                    
+                    callback(null, {
+                      isQualified: hasQualifiedKeyword,
+                      matchType: 'pharmacy-fallback',
+                      matchedExpense: null,
+                      category: null,
+                      confidence: hasQualifiedKeyword ? 0.4 : 0.1,
+                      reason: hasQualifiedKeyword ? 'Pharmacy with medical keywords' : 'Pharmacy without clear medical indication'
+                    });
+                  }
+                );
+              } else {
+                const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
+                const hasQualifiedKeyword = qualifiedKeywords.some(keyword => searchTerms.includes(keyword));
+                
+                callback(null, {
+                  isQualified: hasQualifiedKeyword,
+                  matchType: 'fallback',
+                  matchedExpense: null,
+                  category: null,
+                  confidence: hasQualifiedKeyword ? 0.3 : 0.1,
+                  reason: hasQualifiedKeyword ? 'Contains medical-related keywords' : 'No medical keywords found'
+                });
+              }
             }
           );
         }
