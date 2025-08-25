@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
 const AccountDetailsModal = ({ isOpen, onClose, user, hsaAccount }) => {
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
+  const [accountDetails, setAccountDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleClose = () => {
     setShowSensitiveInfo(false);
+    setAccountDetails(null);
+    setError(null);
     onClose();
   };
 
@@ -34,18 +39,121 @@ const AccountDetailsModal = ({ isOpen, onClose, user, hsaAccount }) => {
     return `****${lastFour}`;
   };
 
-  // Mock data - in a real app, this would come from the backend
-  const accountDetails = {
-    cardNumber: hsaAccount?.debitCardNumber || '4532123456789012',
-    expiryDate: hsaAccount?.cardExpiry || '12/27',
-    cvv: hsaAccount?.cardCvv || '123',
-    accountNumber: hsaAccount?.accountNumber || hsaAccount?.account_number || '123456789012'
+  // Fetch account details from backend
+  useEffect(() => {
+    if (isOpen && user?.userId && !accountDetails) {
+      fetchAccountDetails();
+    }
+  }, [isOpen, user?.userId]);
+
+  const fetchAccountDetails = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`http://localhost:3001/api/card/details/${user.userId}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('No card found. Please contact support to issue a card.');
+        }
+        throw new Error('Failed to fetch account details');
+      }
+      
+      const data = await response.json();
+      setAccountDetails({
+        cardNumber: data.cardNumber,
+        expiryDate: data.expiryDate,
+        cvv: data.cvv,
+        accountNumber: data.accountNumber,
+        cardholderName: data.cardholderName
+      });
+    } catch (err) {
+      console.error('Error fetching account details:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleIssueCard = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('http://localhost:3001/api/card/issue-for-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user.userId }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to issue card');
+      }
+      
+      const data = await response.json();
+      console.log('Card issued successfully:', data);
+      
+      // After successful card issuance, fetch account details
+      await fetchAccountDetails();
+    } catch (err) {
+      console.error('Error issuing card:', err);
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Account Details">
       <div style={{ padding: '1rem 0' }}>
-        {!showSensitiveInfo && (
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>⏳</div>
+            <p>Loading account details...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div style={{
+            backgroundColor: '#f8d7da',
+            border: '1px solid #f5c6cb',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '1rem',
+            color: '#721c24',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚠️</div>
+            <strong>Error:</strong> {error}
+            {error.includes('No card found') && (
+              <div style={{ marginTop: '1rem' }}>
+                <button
+                  onClick={handleIssueCard}
+                  disabled={loading}
+                  style={{
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '1rem',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    opacity: loading ? 0.6 : 1
+                  }}
+                >
+                  {loading ? 'Issuing Card...' : 'Issue Virtual Card'}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {!loading && !error && accountDetails && (
+          <>
+            {!showSensitiveInfo && (
           <div>
             <div style={{ 
               backgroundColor: '#f8d7da', 
@@ -148,7 +256,7 @@ const AccountDetailsModal = ({ isOpen, onClose, user, hsaAccount }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                   <div>
                     <div style={{ fontSize: '0.7rem', opacity: 0.8, marginBottom: '0.2rem' }}>CARDHOLDER</div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>{user?.name?.toUpperCase() || 'CARDHOLDER NAME'}</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>{accountDetails.cardholderName?.toUpperCase() || user?.name?.toUpperCase() || 'CARDHOLDER NAME'}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '0.7rem', opacity: 0.8, marginBottom: '0.2rem' }}>EXPIRES</div>
@@ -210,6 +318,8 @@ const AccountDetailsModal = ({ isOpen, onClose, user, hsaAccount }) => {
               </button>
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </Modal>

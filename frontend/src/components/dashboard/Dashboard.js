@@ -180,7 +180,10 @@ const Dashboard = ({
         loading={loading}
       />
 
-      <TransactionHistory transactions={transactions} />
+      <TransactionHistory 
+        transactions={transactions} 
+        onRefresh={() => onTransactionHistoryUpdate(user)}
+      />
 
       <DepositModal
         isOpen={isDepositModalOpen}

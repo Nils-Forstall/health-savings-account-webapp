@@ -12,6 +12,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [transactionResult, setTransactionResult] = useState(null);
+  const [validationError, setValidationError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +50,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
       return;
     }
 
+    setValidationError(''); // Clear any previous errors
     setIsProcessing(true);
     setLoading(true);
 
@@ -57,19 +59,27 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
         cleanCardNumber,
         transactionAmount,
         merchant,
-        description
+        description,
+        expiryMonth,
+        expiryYear,
+        cvv
       );
 
-      setTransactionResult(result);
-      setShowResult(true);
+      console.log('Transaction result:', result); // Debug log
 
       if (result.status === 'APPROVED') {
+        setTransactionResult(result);
+        setShowResult(true);
         addToast(`Transaction approved! Amount: $${result.amount?.toFixed(2)}`, 'success');
       } else {
-        addToast(`Transaction declined: ${result.message}`, 'error');
+        // Show validation error inline instead of jumping to result page
+        const declineReason = result.reason || result.message || 'Transaction declined';
+        setValidationError(declineReason);
+        addToast(`Transaction declined: ${declineReason}`, 'error');
       }
     } catch (error) {
       console.error('Transaction processing error:', error);
+      setValidationError('Failed to process transaction. Please try again.');
       addToast('Failed to process transaction. Please try again.', 'error');
     } finally {
       setIsProcessing(false);
@@ -87,6 +97,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
     setDescription('');
     setShowResult(false);
     setTransactionResult(null);
+    setValidationError('');
   };
 
   const formatCardNumber = (value) => {
@@ -108,7 +119,13 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
     const formatted = formatCardNumber(e.target.value);
     if (formatted.replace(/\s/g, '').length <= 16) {
       setCardNumber(formatted);
+      if (validationError) setValidationError(''); // Clear error when user starts typing
     }
+  };
+
+  const handleInputChange = (setter) => (e) => {
+    setter(e.target.value);
+    if (validationError) setValidationError(''); // Clear error when user starts typing
   };
 
   if (showResult) {
@@ -174,7 +191,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
               <strong>Status:</strong> {transactionResult?.status}
             </div>
             <div>
-              <strong>Message:</strong> {transactionResult?.message}
+              <strong>Message:</strong> {transactionResult?.reason || transactionResult?.message || 'No details available'}
             </div>
           </div>
 
@@ -305,7 +322,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
                   min="1"
                   max="12"
                   value={expiryMonth}
-                  onChange={(e) => setExpiryMonth(e.target.value)}
+                  onChange={handleInputChange(setExpiryMonth)}
                   placeholder="MM"
                   disabled={isProcessing}
                   style={{
@@ -332,7 +349,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
                   min={new Date().getFullYear()}
                   max={new Date().getFullYear() + 10}
                   value={expiryYear}
-                  onChange={(e) => setExpiryYear(e.target.value)}
+                  onChange={handleInputChange(setExpiryYear)}
                   placeholder="YYYY"
                   disabled={isProcessing}
                   style={{
@@ -358,7 +375,10 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
                   type="text"
                   maxLength="4"
                   value={cvv}
-                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => {
+                    setCvv(e.target.value.replace(/\D/g, ''));
+                    if (validationError) setValidationError('');
+                  }}
                   placeholder="123"
                   disabled={isProcessing}
                   style={{
@@ -389,10 +409,8 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
               </label>
               <input
                 type="number"
-                step="0.01"
-                min="0.01"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={handleInputChange(setAmount)}
                 placeholder="0.00"
                 disabled={isProcessing}
                 style={{
@@ -404,6 +422,16 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
                   boxSizing: 'border-box'
                 }}
               />
+              <style jsx>{`
+                input[type="number"]::-webkit-outer-spin-button,
+                input[type="number"]::-webkit-inner-spin-button {
+                  -webkit-appearance: none;
+                  margin: 0;
+                }
+                input[type="number"] {
+                  -moz-appearance: textfield;
+                }
+              `}</style>
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
@@ -418,7 +446,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
               <input
                 type="text"
                 value={merchant}
-                onChange={(e) => setMerchant(e.target.value)}
+                onChange={handleInputChange(setMerchant)}
                 placeholder="e.g., CVS Pharmacy, Walgreens, Dr. Smith's Office"
                 disabled={isProcessing}
                 style={{
@@ -444,7 +472,7 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
               <input
                 type="text"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleInputChange(setDescription)}
                 placeholder="e.g., Prescription medication, Medical supplies, Doctor visit copay"
                 disabled={isProcessing}
                 style={{
@@ -458,6 +486,25 @@ const CardSimulatorPage = ({ addToast, setLoading, loading, onBackToHome }) => {
               />
             </div>
           </div>
+
+          {validationError && (
+            <div style={{
+              marginBottom: '1.5rem',
+              padding: '1rem',
+              backgroundColor: '#f8d7da',
+              color: '#721c24',
+              border: '1px solid #f5c6cb',
+              borderRadius: '6px',
+              fontSize: '0.95rem',
+              fontWeight: '500',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+              <span>{validationError}</span>
+            </div>
+          )}
 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             <button 

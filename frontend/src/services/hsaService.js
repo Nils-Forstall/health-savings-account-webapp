@@ -23,11 +23,15 @@ export const hsaService = {
     return response.data;
   },
 
-  withdraw: async (userId, amount, reason) => {
+  withdraw: async (userId, amount, reason, cardNumber, expiryMonth, expiryYear, cvv) => {
     const response = await axios.post(`${API_BASE}/hsa/withdraw`, {
       userId,
       amount: parseFloat(amount),
-      reason
+      reason,
+      cardNumber,
+      expiryMonth: parseInt(expiryMonth),
+      expiryYear: parseInt(expiryYear),
+      cvv
     });
     return response.data;
   },
@@ -44,12 +48,15 @@ export const hsaService = {
     return response.data;
   },
 
-  processTransaction: async (cardNumber, amount, merchant, description) => {
+  processTransaction: async (cardNumber, amount, merchant, description, expiryMonth, expiryYear, cvv) => {
     const response = await axios.post(`${API_BASE}/transaction/process`, {
       cardNumber,
       amount: parseFloat(amount),
       merchant,
-      description
+      description,
+      expiryMonth: parseInt(expiryMonth),
+      expiryYear: parseInt(expiryYear),
+      cvv
     });
     return response.data;
   },
