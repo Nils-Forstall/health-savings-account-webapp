@@ -36,6 +36,15 @@ export const hsaService = {
     return response.data;
   },
 
+  reimburse: async (userId, amount, reason) => {
+    const response = await axios.post(`${API_BASE}/hsa/reimburse`, {
+      userId,
+      amount: parseFloat(amount),
+      reason
+    });
+    return response.data;
+  },
+
   getTransactions: async (userId) => {
     const response = await axios.get(`${API_BASE}/hsa/transactions/${userId}`);
     return response.data;

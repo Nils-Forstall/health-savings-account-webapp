@@ -530,7 +530,7 @@ app.post('/api/hsa/deposit', (req, res) => {
   });
 });
 
-// 3.6. Withdraw from HSA Account (with card validation)
+// 3.6. Withdraw from HSA Account (with card validation) - for card simulator
 app.post('/api/hsa/withdraw', (req, res) => {
   console.log('HSA withdrawal:', req.body);
   const { userId, amount, reason, cardNumber, expiryMonth, expiryYear, cvv } = req.body;
@@ -614,6 +614,58 @@ app.post('/api/hsa/withdraw', (req, res) => {
         }
       );
     });
+  });
+});
+
+// 3.7. Direct HSA Reimbursement (without card validation) - for withdraw modal
+app.post('/api/hsa/reimburse', (req, res) => {
+  console.log('HSA reimbursement:', req.body);
+  const { userId, amount, reason } = req.body;
+  
+  if (!userId || !amount || amount <= 0) {
+    return res.status(400).json({ error: 'Valid user ID and positive amount are required' });
+  }
+
+  if (!reason || reason.trim().length === 0) {
+    return res.status(400).json({ error: 'Expense reason is required for reimbursements' });
+  }
+  
+  // Get HSA account
+  db.get(`SELECT * FROM hsa_accounts WHERE user_id = ?`, [userId], (err, hsaAccount) => {
+    if (err || !hsaAccount) {
+      return res.status(404).json({ error: 'HSA account not found' });
+    }
+    
+    if (hsaAccount.balance < amount) {
+      return res.status(400).json({ 
+        error: 'Insufficient funds',
+        availableBalance: hsaAccount.balance 
+      });
+    }
+    
+    const newBalance = hsaAccount.balance - parseFloat(amount);
+    
+    db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
+      [newBalance, userId], 
+      function(err) {
+        if (err) {
+          console.log('Reimbursement error:', err);
+          return res.status(500).json({ error: 'Failed to process reimbursement' });
+        }
+        
+        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
+                VALUES (NULL, ?, 'HSA Reimbursement', ?, 'APPROVED', ?)`,
+          [-amount, reason, hsaAccount.id]);
+        
+        console.log('Reimbursement successful:', amount);
+        res.json({
+          message: 'Reimbursement successful',
+          amount: parseFloat(amount),
+          newBalance,
+          hsaId: hsaAccount.id
+        });
+      }
+    );
   });
 });
 

@@ -18,11 +18,6 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
   const [proofFile, setProofFile] = useState(null);
   const [proofFileName, setProofFileName] = useState('');
   
-  // Card validation fields
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryMonth, setExpiryMonth] = useState('');
-  const [expiryYear, setExpiryYear] = useState('');
-  const [cvv, setCvv] = useState('');
 
   const validateAmount = (value) => {
     if (!value) {
@@ -93,69 +88,6 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     setProofFileName('');
   };
 
-  const formatCardNumber = (value) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return v;
-    }
-  };
-
-  const handleCardNumberChange = (e) => {
-    const formatted = formatCardNumber(e.target.value);
-    if (formatted.replace(/\s/g, '').length <= 16) {
-      setCardNumber(formatted);
-    }
-  };
-
-  const validateCardInfo = () => {
-    if (!cardNumber || !expiryMonth || !expiryYear || !cvv) {
-      setErrorMessage('Please fill in all card information fields');
-      addToast('❌ Please fill in all card information fields', 'error');
-      setStep('error');
-      return false;
-    }
-
-    const cleanCardNumber = cardNumber.replace(/\s/g, '');
-    if (!/^\d{16}$/.test(cleanCardNumber)) {
-      setErrorMessage('Please enter a valid 16-digit card number');
-      addToast('❌ Please enter a valid 16-digit card number', 'error');
-      setStep('error');
-      return false;
-    }
-
-    const month = parseInt(expiryMonth);
-    const year = parseInt(expiryYear);
-    if (month < 1 || month > 12) {
-      setErrorMessage('Please enter a valid expiry month (1-12)');
-      addToast('❌ Please enter a valid expiry month (1-12)', 'error');
-      setStep('error');
-      return false;
-    }
-    if (year < new Date().getFullYear()) {
-      setErrorMessage('Card appears to be expired');
-      addToast('❌ Card appears to be expired', 'error');
-      setStep('error');
-      return false;
-    }
-
-    if (!/^\d{3,4}$/.test(cvv)) {
-      setErrorMessage('Please enter a valid CVV (3-4 digits)');
-      addToast('❌ Please enter a valid CVV (3-4 digits)', 'error');
-      setStep('error');
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -167,18 +99,12 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
       return;
     }
 
-    // Validate card information
-    if (!validateCardInfo()) {
-      return;
-    }
-
     setStep('loading');
     
     // Simulate loading for 0.3 seconds
     setTimeout(async () => {
       try {
-        const cleanCardNumber = cardNumber.replace(/\s/g, '');
-        const response = await hsaService.withdraw(user.userId, amount, reason, cleanCardNumber, expiryMonth, expiryYear, cvv);
+        const response = await hsaService.reimburse(user.userId, amount, reason);
         setResult(response);
         onSuccess(response.newBalance);
         addToast(`💸 Successfully reimbursed $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
@@ -227,10 +153,6 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     setExpenseOptions([]);
     setProofFile(null);
     setProofFileName('');
-    setCardNumber('');
-    setExpiryMonth('');
-    setExpiryYear('');
-    setCvv('');
     setStep('form');
     setResult(null);
     setErrorMessage('');
@@ -468,10 +390,10 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
             <button 
               type="submit" 
               className="primary-btn"
-              disabled={!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense}
+              disabled={!amount || !selectedExpense}
               style={{
-                opacity: (!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense) ? 0.6 : 1,
-                cursor: (!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense) ? 'not-allowed' : 'pointer'
+                opacity: (!amount || !selectedExpense) ? 0.6 : 1,
+                cursor: (!amount || !selectedExpense) ? 'not-allowed' : 'pointer'
               }}
             >
               Reimburse
