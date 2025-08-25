@@ -27,13 +27,41 @@ const Dashboard = ({
   };
 
   return (
-    <div className="step-container">
-      <h2>HSA Dashboard</h2>
+    <div>
+      <h3 style={{ marginBottom: '2rem', textAlign: 'left' }}>Welcome back, {user?.name}!</h3>
       
-      <div className="info-card">
-        <h3>Welcome back, {user?.name}!</h3>
-        <p><strong>Account Number:</strong> {hsaAccount?.account_number}</p>
-        <p><strong>Current Balance:</strong> ${hsaAccount?.balance?.toFixed(2) || '0.00'}</p>
+      <div style={{ 
+        textAlign: 'center', 
+        margin: '2rem 0', 
+        padding: '1.5rem',
+        backgroundColor: '#f5f2e8',
+        borderRadius: '12px',
+        border: '2px solid #e9ecef'
+      }}>
+        <div style={{ 
+          fontSize: '1.2rem', 
+          color: '#6c757d', 
+          marginBottom: '0.5rem',
+          fontWeight: '500'
+        }}>
+          Current Balance
+        </div>
+        <div style={{ 
+          fontSize: '3rem', 
+          fontWeight: 'bold', 
+          color: '#28a745',
+          marginBottom: '1rem',
+          fontFamily: 'monospace'
+        }}>
+          ${hsaAccount?.balance?.toFixed(2) || '0.00'}
+        </div>
+        <div style={{ 
+          fontSize: '0.9rem', 
+          color: '#6c757d',
+          fontWeight: '500'
+        }}>
+          Account: {hsaAccount?.account_number || hsaAccount?.accountNumber || 'Not Available'}
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem', justifyContent: 'center' }}>

@@ -3,9 +3,9 @@ import React from 'react';
 const TransactionHistory = ({ transactions }) => {
   return (
     <div>
-      <h3>Transaction History</h3>
+      <h3 style={{ textAlign: 'left' }}>Transaction History</h3>
       {transactions.length > 0 ? (
-        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+        <div>
           {transactions.map((transaction, index) => (
             <div key={index} style={{ 
               padding: '1rem', 
