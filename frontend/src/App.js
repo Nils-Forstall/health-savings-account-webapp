@@ -4,6 +4,7 @@ import MultiStepSignup from './components/auth/MultiStepSignup';
 import LoginForm from './components/auth/LoginForm';
 import HSAApplication from './components/hsa/HSAApplication';
 import Dashboard from './components/dashboard/Dashboard';
+import CardSimulatorPage from './components/simulator/CardSimulatorPage';
 import Toast from './components/common/Toast';
 import { hsaService } from './services/hsaService';
 
@@ -80,10 +81,50 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>🛡️ ForsShield</h1>
-        <p>Your Health Savings Account Management Platform</p>
-        
-        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <div>
+            <h1>🛡️ ForsShield</h1>
+            <p>Your Health Savings Account Management Platform</p>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            {currentView !== 'cardSimulator' && (
+              <button 
+                onClick={() => setCurrentView('cardSimulator')}
+                style={{
+                  background: '#007bff',
+                  color: 'white',
+                  padding: '0.75rem 1.25rem',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                💳 Simulate Transaction
+              </button>
+            )}
+            {isAuthenticated && currentView !== 'dashboard' && (
+              <button 
+                onClick={() => setCurrentView('dashboard')}
+                style={{
+                  background: '#28a745',
+                  color: 'white',
+                  padding: '0.75rem 1.25rem',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                🏠 Dashboard
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
       <main className="App-main">
@@ -128,6 +169,15 @@ function App() {
             setLoading={setLoading}
             loading={loading}
             onLogout={handleLogout}
+          />
+        )}
+
+        {currentView === 'cardSimulator' && (
+          <CardSimulatorPage
+            addToast={addToast}
+            setLoading={setLoading}
+            loading={loading}
+            onBackToHome={() => setCurrentView(isAuthenticated ? 'dashboard' : 'frontPage')}
           />
         )}
       </main>

@@ -136,6 +136,10 @@ function generateAccountNumber() {
   return 'HSA' + Math.random().toString().slice(2, 11);
 }
 
+function generateCVV() {
+  return Math.floor(Math.random() * 900 + 100).toString();
+}
+
 // Helper function to determine if someone is catch-up eligible
 function isCatchUpEligible(dateOfBirth, year = new Date().getFullYear()) {
   const birthDate = new Date(dateOfBirth);
@@ -324,13 +328,40 @@ app.post('/api/hsa/create', (req, res) => {
         return res.status(500).json({ error: 'Failed to create HSA account' });
       }
       
-      console.log('HSA created with ID:', this.lastID);
-      res.json({
-        hsaId: this.lastID,
-        accountNumber,
-        balance: 0,
-        message: 'HSA account created successfully'
-      });
+      const hsaAccountId = this.lastID;
+      console.log('HSA created with ID:', hsaAccountId);
+      
+      // Automatically issue a virtual card for the new HSA account
+      const cardNumber = generateCardNumber();
+      const cvv = generateCVV();
+      const currentYear = new Date().getFullYear();
+      
+      db.run(`INSERT INTO virtual_cards (hsa_account_id, card_number, expiry_month, expiry_year, cvv) 
+              VALUES (?, ?, ?, ?, ?)`,
+        [hsaAccountId, cardNumber, 12, currentYear + 3, cvv],
+        function(cardErr) {
+          if (cardErr) {
+            console.log('Card creation error:', cardErr);
+            // Still return success for HSA creation even if card fails
+            return res.json({
+              hsaId: hsaAccountId,
+              accountNumber,
+              balance: 0,
+              message: 'HSA account created successfully, but card issuance failed'
+            });
+          }
+          
+          console.log('Virtual card issued with ID:', this.lastID);
+          res.json({
+            hsaId: hsaAccountId,
+            accountNumber,
+            balance: 0,
+            cardId: this.lastID,
+            cardNumber,
+            message: 'HSA account and virtual card created successfully'
+          });
+        }
+      );
     }
   );
 });
@@ -499,50 +530,90 @@ app.post('/api/hsa/deposit', (req, res) => {
   });
 });
 
-// 3.6. Withdraw from HSA Account
+// 3.6. Withdraw from HSA Account (with card validation)
 app.post('/api/hsa/withdraw', (req, res) => {
   console.log('HSA withdrawal:', req.body);
-  const { userId, amount, reason } = req.body;
+  const { userId, amount, reason, cardNumber, expiryMonth, expiryYear, cvv } = req.body;
   
   if (!userId || !amount || amount <= 0) {
     return res.status(400).json({ error: 'Valid user ID and positive amount are required' });
   }
+
+  // Validate card information is provided
+  if (!cardNumber || !expiryMonth || !expiryYear || !cvv) {
+    return res.status(400).json({ error: 'Card information is required for withdrawals' });
+  }
+
+  // Validate card number format
+  if (!/^\d{16}$/.test(cardNumber)) {
+    return res.status(400).json({ error: 'Invalid card number format' });
+  }
+
+  // Validate expiry date
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  if (expiryMonth < 1 || expiryMonth > 12) {
+    return res.status(400).json({ error: 'Invalid expiry month' });
+  }
+  if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+    return res.status(400).json({ error: 'Card expired' });
+  }
+
+  // Validate CVV
+  if (!/^\d{3,4}$/.test(cvv)) {
+    return res.status(400).json({ error: 'Invalid CVV format' });
+  }
   
+  // First get HSA account
   db.get(`SELECT * FROM hsa_accounts WHERE user_id = ?`, [userId], (err, hsaAccount) => {
     if (err || !hsaAccount) {
       return res.status(404).json({ error: 'HSA account not found' });
     }
     
-    if (hsaAccount.balance < amount) {
-      return res.status(400).json({ 
-        error: 'Insufficient funds',
-        availableBalance: hsaAccount.balance 
-      });
-    }
+    // Validate card belongs to this HSA account
+    db.get(`SELECT * FROM virtual_cards WHERE hsa_account_id = ? AND card_number = ? AND expiry_month = ? AND expiry_year = ? AND cvv = ? AND is_active = 1`, 
+      [hsaAccount.id, cardNumber, expiryMonth, expiryYear, cvv], (cardErr, card) => {
+      
+      if (cardErr) {
+        console.log('Card validation error:', cardErr);
+        return res.status(500).json({ error: 'Failed to validate card' });
+      }
+      
+      if (!card) {
+        return res.status(400).json({ error: 'Invalid card information. Please check your card number, expiry date, and CVV.' });
+      }
     
-    const newBalance = hsaAccount.balance - parseFloat(amount);
-    
-    db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
-      [newBalance, userId], 
-      function(err) {
-        if (err) {
-          console.log('Withdrawal error:', err);
-          return res.status(500).json({ error: 'Failed to process withdrawal' });
-        }
-        
-        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
-                VALUES (NULL, ?, 'HSA Withdrawal', ?, 'APPROVED', ?)`,
-          [-amount, reason || 'Account withdrawal', hsaAccount.id]);
-        
-        console.log('Withdrawal successful:', amount);
-        res.json({
-          message: 'Withdrawal successful',
-          amount: parseFloat(amount),
-          newBalance,
-          hsaId: hsaAccount.id
+      if (hsaAccount.balance < amount) {
+        return res.status(400).json({ 
+          error: 'Insufficient funds',
+          availableBalance: hsaAccount.balance 
         });
       }
-    );
+      
+      const newBalance = hsaAccount.balance - parseFloat(amount);
+      
+      db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
+        [newBalance, userId], 
+        function(err) {
+          if (err) {
+            console.log('Withdrawal error:', err);
+            return res.status(500).json({ error: 'Failed to process withdrawal' });
+          }
+          
+          db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
+                  VALUES (?, ?, 'HSA Withdrawal', ?, 'APPROVED', ?)`,
+            [card.id, -amount, reason || 'Account withdrawal', hsaAccount.id]);
+          
+          console.log('Withdrawal successful:', amount);
+          res.json({
+            message: 'Withdrawal successful',
+            amount: parseFloat(amount),
+            newBalance,
+            hsaId: hsaAccount.id
+          });
+        }
+      );
+    });
   });
 });
 
@@ -600,11 +671,12 @@ app.post('/api/card/issue', (req, res) => {
   }
   
   const cardNumber = generateCardNumber();
+  const cvv = generateCVV();
   const currentYear = new Date().getFullYear();
   
   db.run(`INSERT INTO virtual_cards (hsa_account_id, card_number, expiry_month, expiry_year, cvv) 
           VALUES (?, ?, ?, ?, ?)`,
-    [hsaAccountId, cardNumber, 12, currentYear + 3, '123'],
+    [hsaAccountId, cardNumber, 12, currentYear + 3, cvv],
     function(err) {
       if (err) {
         console.log('Card creation error:', err);
@@ -617,11 +689,66 @@ app.post('/api/card/issue', (req, res) => {
         cardNumber,
         expiryMonth: 12,
         expiryYear: currentYear + 3,
-        cvv: '123',
+        cvv: cvv,
         message: 'Virtual card issued successfully'
       });
     }
   );
+});
+
+// 4.1. Issue Virtual Card for User (by User ID)
+app.post('/api/card/issue-for-user', (req, res) => {
+  console.log('Issuing card for user:', req.body);
+  const { userId } = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+  
+  // First, get the HSA account for this user
+  db.get(`SELECT id FROM hsa_accounts WHERE user_id = ?`, [userId], (err, hsaAccount) => {
+    if (err || !hsaAccount) {
+      return res.status(404).json({ error: 'HSA account not found for user' });
+    }
+    
+    // Check if user already has an active card
+    db.get(`SELECT id FROM virtual_cards WHERE hsa_account_id = ? AND is_active = 1`, [hsaAccount.id], (err, existingCard) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to check existing cards' });
+      }
+      
+      if (existingCard) {
+        return res.status(400).json({ error: 'User already has an active card' });
+      }
+      
+      // Issue new card
+      const cardNumber = generateCardNumber();
+      const cvv = generateCVV();
+      const currentYear = new Date().getFullYear();
+      
+      db.run(`INSERT INTO virtual_cards (hsa_account_id, card_number, expiry_month, expiry_year, cvv) 
+              VALUES (?, ?, ?, ?, ?)`,
+        [hsaAccount.id, cardNumber, 12, currentYear + 3, cvv],
+        function(err) {
+          if (err) {
+            console.log('Card creation error:', err);
+            return res.status(500).json({ error: 'Failed to issue card' });
+          }
+          
+          console.log('Card issued with ID:', this.lastID, 'for user:', userId);
+          res.json({
+            cardId: this.lastID,
+            cardNumber,
+            expiryMonth: 12,
+            expiryYear: currentYear + 3,
+            cvv: cvv,
+            hsaAccountId: hsaAccount.id,
+            message: 'Virtual card issued successfully'
+          });
+        }
+      );
+    });
+  });
 });
 
 const validateExpense = (merchant, description, callback) => {
@@ -703,7 +830,7 @@ const validateExpense = (merchant, description, callback) => {
                 });
               }
               
-              const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
+              const qualifiedKeywords = ['pharmacy', 'medical', 'doctor', 'dr.', 'hospital', 'clinic', 'prescription', 'rx', 'cvs', 'walgreens'];
               const hasQualifiedKeyword = qualifiedKeywords.some(keyword => searchTerms.includes(keyword));
               
               callback(null, {
@@ -725,7 +852,57 @@ const validateExpense = (merchant, description, callback) => {
 // 5. Process Transaction (Enhanced with database validation)
 app.post('/api/transaction/process', (req, res) => {
   console.log('Processing transaction:', req.body);
-  const { cardNumber, amount, merchant, description } = req.body;
+  const { cardNumber, amount, merchant, description, expiryMonth, expiryYear, cvv } = req.body;
+  
+  // Validate required card information
+  if (!cardNumber || !expiryMonth || !expiryYear || !cvv) {
+    return res.json({
+      status: 'DECLINED',
+      reason: 'Missing card information',
+      amount,
+      merchant
+    });
+  }
+  
+  // Validate card number format
+  if (!/^\d{16}$/.test(cardNumber)) {
+    return res.json({
+      status: 'DECLINED',
+      reason: 'Invalid card number format',
+      amount,
+      merchant
+    });
+  }
+  
+  // Validate expiry date
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  if (expiryMonth < 1 || expiryMonth > 12) {
+    return res.json({
+      status: 'DECLINED',
+      reason: 'Invalid expiry month',
+      amount,
+      merchant
+    });
+  }
+  if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+    return res.json({
+      status: 'DECLINED',
+      reason: 'Card expired',
+      amount,
+      merchant
+    });
+  }
+  
+  // Validate CVV
+  if (!/^\d{3,4}$/.test(cvv)) {
+    return res.json({
+      status: 'DECLINED',
+      reason: 'Invalid CVV format',
+      amount,
+      merchant
+    });
+  }
   
   validateExpense(merchant, description, (err, validation) => {
     if (err) {
@@ -758,13 +935,13 @@ app.post('/api/transaction/process', (req, res) => {
       });
     }
     
-    // Check card exists and get HSA balance
+    // Check card exists with full validation and get HSA balance
     db.get(`
       SELECT vc.id as card_id, ha.balance 
       FROM virtual_cards vc 
       JOIN hsa_accounts ha ON vc.hsa_account_id = ha.id 
-      WHERE vc.card_number = ? AND vc.is_active = 1
-    `, [cardNumber], (err, row) => {
+      WHERE vc.card_number = ? AND vc.expiry_month = ? AND vc.expiry_year = ? AND vc.cvv = ? AND vc.is_active = 1
+    `, [cardNumber, expiryMonth, expiryYear, cvv], (err, row) => {
       
       if (err || !row) {
         return res.json({
@@ -796,7 +973,7 @@ app.post('/api/transaction/process', (req, res) => {
       
       db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
               VALUES (?, ?, ?, ?, 'APPROVED', (SELECT hsa_account_id FROM virtual_cards WHERE id = ?))`,
-        [row.card_id, amount, merchant, description, row.card_id]);
+        [row.card_id, -amount, merchant, description, row.card_id]);
       
       res.json({
         status: 'APPROVED',
@@ -968,6 +1145,49 @@ app.post('/api/expenses/populate', (req, res) => {
         errors: errorCount,
         total: expenses.length
       });
+    });
+  });
+});
+
+// 6. Get Card Details for User
+app.get('/api/card/details/:userId', (req, res) => {
+  const userId = req.params.userId;
+  
+  db.get(`
+    SELECT 
+      vc.card_number,
+      vc.expiry_month,
+      vc.expiry_year,
+      vc.cvv,
+      vc.is_active,
+      ha.account_number,
+      ha.balance,
+      u.first_name,
+      u.last_name
+    FROM virtual_cards vc
+    JOIN hsa_accounts ha ON vc.hsa_account_id = ha.id
+    JOIN users u ON ha.user_id = u.id
+    WHERE u.id = ? AND vc.is_active = 1
+    ORDER BY vc.created_at DESC
+    LIMIT 1
+  `, [userId], (err, cardDetails) => {
+    if (err) {
+      console.log('Card details error:', err);
+      return res.status(500).json({ error: 'Failed to fetch card details' });
+    }
+    
+    if (!cardDetails) {
+      return res.status(404).json({ error: 'No active card found for user' });
+    }
+    
+    res.json({
+      cardNumber: cardDetails.card_number,
+      expiryDate: `${cardDetails.expiry_month.toString().padStart(2, '0')}/${cardDetails.expiry_year.toString().slice(-2)}`,
+      cvv: cardDetails.cvv,
+      accountNumber: cardDetails.account_number,
+      balance: cardDetails.balance,
+      cardholderName: `${cardDetails.first_name} ${cardDetails.last_name}`,
+      isActive: cardDetails.is_active
     });
   });
 });

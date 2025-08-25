@@ -1,9 +1,37 @@
 import React from 'react';
 
-const TransactionHistory = ({ transactions }) => {
+const TransactionHistory = ({ transactions, onRefresh }) => {
   return (
     <div>
-      <h3 style={{ textAlign: 'left' }}>Transaction History</h3>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: '1rem'
+      }}>
+        <h3 style={{ textAlign: 'left', margin: 0 }}>Transaction History</h3>
+        <button 
+          onClick={onRefresh}
+          style={{
+            background: '#007bff',
+            color: 'white',
+            padding: '0.5rem 1rem',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseOver={(e) => e.target.style.background = '#0056b3'}
+          onMouseOut={(e) => e.target.style.background = '#007bff'}
+          title="Refresh transaction history"
+        >
+          🔄 Refresh
+        </button>
+      </div>
       {transactions.length > 0 ? (
         <div>
           {transactions.map((transaction, index) => (

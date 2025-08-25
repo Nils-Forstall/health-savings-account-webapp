@@ -52,6 +52,7 @@ const Dashboard = ({
     setContributionRefreshTrigger(prev => prev + 1); // Trigger ContributionLimits refresh
   };
 
+
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
   };
@@ -179,7 +180,10 @@ const Dashboard = ({
         loading={loading}
       />
 
-      <TransactionHistory transactions={transactions} />
+      <TransactionHistory 
+        transactions={transactions} 
+        onRefresh={() => onTransactionHistoryUpdate(user)}
+      />
 
       <DepositModal
         isOpen={isDepositModalOpen}
@@ -202,6 +206,7 @@ const Dashboard = ({
         setLoading={setLoading}
         loading={loading}
       />
+
 
       <AccountDetailsModal
         isOpen={isAccountDetailsModalOpen}
