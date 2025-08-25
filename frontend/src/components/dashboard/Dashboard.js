@@ -67,6 +67,9 @@ const Dashboard = ({
 
   // Check if deposits should be disabled
   const isDepositDisabled = loading || (contributionLimits && contributionLimits.remainingLimit <= 0);
+  
+  // Check if withdrawals should be disabled
+  const isWithdrawDisabled = loading || (hsaAccount?.balance <= 0);
 
   return (
     <div>
@@ -152,11 +155,15 @@ const Dashboard = ({
             <button 
               onClick={() => setIsWithdrawModalOpen(true)} 
               className="primary-btn"
-              disabled={loading}
+              disabled={isWithdrawDisabled}
               style={{
+                opacity: isWithdrawDisabled ? 0.5 : 1,
+                cursor: isWithdrawDisabled ? 'not-allowed' : 'pointer',
+                backgroundColor: isWithdrawDisabled ? '#6c757d' : undefined,
                 fontSize: '0.9rem',
                 padding: '0.5rem 1rem'
               }}
+              title={hsaAccount?.balance <= 0 ? 'No funds available for withdrawal' : undefined}
             >
               💸 Withdraw Money
             </button>

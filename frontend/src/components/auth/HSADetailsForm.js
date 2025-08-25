@@ -228,7 +228,7 @@ const HSADetailsForm = ({ formData, setFormData, onBack, onSubmit, loading }) =>
           </div>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', marginTop: '2rem' }}>
           <button type="button" onClick={onBack} className="secondary-btn">
             Back
           </button>
