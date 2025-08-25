@@ -6,12 +6,14 @@ const API_BASE = 'http://localhost:3001/api';
 
 function App() {
   // State management
-  const [currentStep, setCurrentStep] = useState('register'); // register, hsa, card, transaction
+  const [currentView, setCurrentView] = useState('frontPage'); // frontPage, login, dashboard, hsaApplication
   const [user, setUser] = useState(null);
   const [hsaAccount, setHsaAccount] = useState(null);
   const [virtualCard, setVirtualCard] = useState(null);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -30,6 +32,36 @@ function App() {
     });
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await axios.post(`${API_BASE}/users/login`, {
+        email: formData.email,
+        password: formData.password
+      });
+
+      setUser(response.data);
+      setIsAuthenticated(true);
+      setMessage('✅ Login successful!');
+      
+      try {
+        const hsaResponse = await axios.get(`${API_BASE}/hsa/${response.data.userId}`);
+        setHsaAccount(hsaResponse.data);
+        setCurrentView('dashboard');
+        fetchTransactionHistory();
+      } catch (hsaError) {
+        setCurrentView('hsaApplication');
+      }
+    } catch (error) {
+      setMessage('❌ ' + (error.response?.data?.error || 'Login failed'));
+    }
+    
+    setLoading(false);
+  };
+
   // Step 1: Create User Account
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -44,13 +76,79 @@ function App() {
       });
 
       setUser(response.data);
+      setIsAuthenticated(true);
       setMessage('✅ User account created successfully!');
-      setCurrentStep('hsa');
+      
+      try {
+        const hsaResponse = await axios.post(`${API_BASE}/hsa/create`, {
+          userId: response.data.userId
+        });
+        setHsaAccount(hsaResponse.data);
+        setCurrentView('dashboard');
+        fetchTransactionHistory();
+      } catch (hsaError) {
+        setCurrentView('hsaApplication');
+      }
     } catch (error) {
       setMessage('❌ ' + (error.response?.data?.error || 'Failed to create user'));
     }
     
     setLoading(false);
+  };
+
+  const handleDeposit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await axios.post(`${API_BASE}/hsa/deposit`, {
+        userId: user.userId,
+        amount: parseFloat(formData.amount)
+      });
+
+      setHsaAccount(prev => ({ ...prev, balance: response.data.newBalance }));
+      setMessage(`✅ Deposit successful! New balance: $${response.data.newBalance.toFixed(2)}`);
+      setFormData(prev => ({ ...prev, amount: '' }));
+      fetchTransactionHistory();
+    } catch (error) {
+      setMessage('❌ ' + (error.response?.data?.error || 'Deposit failed'));
+    }
+    
+    setLoading(false);
+  };
+
+  const handleWithdraw = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await axios.post(`${API_BASE}/hsa/withdraw`, {
+        userId: user.userId,
+        amount: parseFloat(formData.amount)
+      });
+
+      setHsaAccount(prev => ({ ...prev, balance: response.data.newBalance }));
+      setMessage(`✅ Withdrawal successful! New balance: $${response.data.newBalance.toFixed(2)}`);
+      setFormData(prev => ({ ...prev, amount: '' }));
+      fetchTransactionHistory();
+    } catch (error) {
+      setMessage('❌ ' + (error.response?.data?.error || 'Withdrawal failed'));
+    }
+    
+    setLoading(false);
+  };
+
+  const fetchTransactionHistory = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await axios.get(`${API_BASE}/hsa/transactions/${user.userId}`);
+      setTransactions(response.data.transactions);
+    } catch (error) {
+      console.error('Failed to fetch transaction history:', error);
+    }
   };
 
   // Step 2: Create HSA Account
@@ -65,7 +163,8 @@ function App() {
 
       setHsaAccount(response.data);
       setMessage('✅ HSA account created successfully!');
-      setCurrentStep('card');
+      setCurrentView('dashboard');
+      fetchTransactionHistory();
     } catch (error) {
       setMessage('❌ Failed to create HSA account');
     }
@@ -122,11 +221,31 @@ function App() {
     setLoading(false);
   };
 
-  const resetApp = () => {
-    setCurrentStep('register');
+  const handleLogout = () => {
     setUser(null);
     setHsaAccount(null);
     setVirtualCard(null);
+    setTransactions([]);
+    setIsAuthenticated(false);
+    setCurrentView('frontPage');
+    setMessage('');
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      amount: '',
+      merchant: '',
+      description: ''
+    });
+  };
+
+  const resetApp = () => {
+    setCurrentView('frontPage');
+    setUser(null);
+    setHsaAccount(null);
+    setVirtualCard(null);
+    setTransactions([]);
+    setIsAuthenticated(false);
     setMessage('');
     setFormData({
       name: '',
@@ -144,6 +263,12 @@ function App() {
         <h1>🏥 HSA Web Application</h1>
         <p>Health Savings Account Management System</p>
         
+        {isAuthenticated && (
+          <button onClick={handleLogout} className="reset-btn" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+            Logout
+          </button>
+        )}
+        
         {message && (
           <div className={`message ${message.includes('❌') ? 'error' : 'success'}`}>
             {message}
@@ -152,10 +277,10 @@ function App() {
       </header>
 
       <main className="App-main">
-        {/* Step 1: User Registration */}
-        {currentStep === 'register' && (
+        {/* Front Page - Sign Up */}
+        {currentView === 'frontPage' && (
           <div className="step-container">
-            <h2>Step 1: Create Your Account</h2>
+            <h2>Create Your HSA Account</h2>
             <form onSubmit={handleCreateUser} className="form">
               <div className="form-group">
                 <label>Name:</label>
@@ -188,123 +313,162 @@ function App() {
                 />
               </div>
               <button type="submit" disabled={loading} className="primary-btn">
-                {loading ? 'Creating...' : 'Create Account'}
+                {loading ? 'Creating Account...' : 'Sign Up'}
               </button>
             </form>
+            <p style={{ marginTop: '1rem', color: '#666' }}>
+              Already have an account?{' '}
+              <button 
+                onClick={() => setCurrentView('login')} 
+                style={{ background: 'none', border: 'none', color: '#3498db', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                Log in
+              </button>
+            </p>
           </div>
         )}
 
-        {/* Step 2: HSA Account Creation */}
-        {currentStep === 'hsa' && (
+        {/* Login Page */}
+        {currentView === 'login' && (
           <div className="step-container">
-            <h2>Step 2: Create Your HSA Account</h2>
-            <div className="info-card">
-              <h3>Welcome, {user?.name}!</h3>
-              <p>Ready to create your Health Savings Account?</p>
-              <p><small>HSAs provide tax advantages for medical expenses</small></p>
-            </div>
-            <button onClick={handleCreateHSA} disabled={loading} className="primary-btn">
-              {loading ? 'Creating HSA...' : 'Create HSA Account'}
-            </button>
-          </div>
-        )}
-
-        {/* Step 3: Card Issuance */}
-        {currentStep === 'card' && (
-          <div className="step-container">
-            <h2>Step 3: Issue Virtual Debit Card</h2>
-            <div className="info-card">
-              <h3>HSA Account Details</h3>
-              <p><strong>Account Number:</strong> {hsaAccount?.accountNumber}</p>
-              <p><strong>Current Balance:</strong> ${hsaAccount?.balance?.toFixed(2) || '0.00'}</p>
-            </div>
-            <button onClick={handleIssueCard} disabled={loading} className="primary-btn">
-              {loading ? 'Issuing Card...' : 'Issue Virtual Debit Card'}
-            </button>
-          </div>
-        )}
-
-        {/* Step 4: Transaction Processing */}
-        {currentStep === 'transaction' && (
-          <div className="step-container">
-            <h2>Step 4: Process Transactions</h2>
-            
-            {/* Virtual Card Display */}
-            <div className="card-display">
-              <div className="virtual-card">
-                <div className="card-number">
-                  {virtualCard?.cardNumber?.replace(/(.{4})/g, '$1 ').trim()}
-                </div>
-                <div className="card-details">
-                  <span>EXP: {virtualCard?.expiryMonth}/{virtualCard?.expiryYear}</span>
-                  <span>CVV: {virtualCard?.cvv}</span>
-                </div>
-                <div className="card-balance">
-                  Balance: ${hsaAccount?.balance?.toFixed(2) || '0.00'}
-                </div>
-              </div>
-            </div>
-
-            {/* Transaction Form */}
-            <form onSubmit={handleTransaction} className="form">
-              <h3>Simulate a Purchase</h3>
+            <h2>Log In</h2>
+            <form onSubmit={handleLogin} className="form">
               <div className="form-group">
-                <label>Amount ($):</label>
+                <label>Email:</label>
                 <input
-                  type="number"
-                  name="amount"
-                  step="0.01"
-                  value={formData.amount}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleInputChange}
                   required
                 />
               </div>
               <div className="form-group">
-                <label>Merchant:</label>
+                <label>Password:</label>
                 <input
-                  type="text"
-                  name="merchant"
-                  value={formData.merchant}
+                  type="password"
+                  name="password"
+                  value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="e.g., CVS Pharmacy, Starbucks"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Description:</label>
-                <input
-                  type="text"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Prescription medication, Coffee"
                   required
                 />
               </div>
               <button type="submit" disabled={loading} className="primary-btn">
-                {loading ? 'Processing...' : 'Process Transaction'}
+                {loading ? 'Logging in...' : 'Log In'}
               </button>
             </form>
-
-            <div className="example-transactions">
-              <h4>Try these examples:</h4>
-              <div className="examples">
-                <div className="example qualified">
-                  <strong>✅ Qualified:</strong> CVS Pharmacy - "Prescription medication" - $25.99
-                </div>
-                <div className="example non-qualified">
-                  <strong>❌ Not Qualified:</strong> Starbucks - "Coffee and pastry" - $8.50
-                </div>
-              </div>
-            </div>
+            <p style={{ marginTop: '1rem', color: '#666' }}>
+              Don't have an account?{' '}
+              <button 
+                onClick={() => setCurrentView('frontPage')} 
+                style={{ background: 'none', border: 'none', color: '#3498db', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                Sign up
+              </button>
+            </p>
           </div>
         )}
 
-        {/* Reset Button */}
-        {currentStep !== 'register' && (
-          <button onClick={resetApp} className="reset-btn">
-            Start Over
-          </button>
+        {/* HSA Application */}
+        {currentView === 'hsaApplication' && (
+          <div className="step-container">
+            <h2>Apply for HSA Account</h2>
+            <div className="info-card">
+              <h3>Welcome, {user?.name}!</h3>
+              <p>You don't have an HSA account yet. Would you like to apply for one?</p>
+              <p><small>HSAs provide tax advantages for medical expenses</small></p>
+            </div>
+            <button onClick={handleCreateHSA} disabled={loading} className="primary-btn">
+              {loading ? 'Creating HSA...' : 'Apply for HSA Account'}
+            </button>
+          </div>
+        )}
+
+        {/* Dashboard */}
+        {currentView === 'dashboard' && (
+          <div className="step-container">
+            <h2>HSA Dashboard</h2>
+            
+            {/* Account Info */}
+            <div className="info-card">
+              <h3>Welcome back, {user?.name}!</h3>
+              <p><strong>Account Number:</strong> {hsaAccount?.account_number}</p>
+              <p><strong>Current Balance:</strong> ${hsaAccount?.balance?.toFixed(2) || '0.00'}</p>
+            </div>
+
+            {/* Deposit/Withdraw Forms */}
+            <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
+              <div style={{ flex: 1 }}>
+                <h3>Deposit Money</h3>
+                <form onSubmit={handleDeposit} className="form">
+                  <div className="form-group">
+                    <label>Amount ($):</label>
+                    <input
+                      type="number"
+                      name="amount"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <button type="submit" disabled={loading} className="primary-btn">
+                    {loading ? 'Processing...' : 'Deposit'}
+                  </button>
+                </form>
+              </div>
+              
+              <div style={{ flex: 1 }}>
+                <h3>Withdraw Money</h3>
+                <form onSubmit={handleWithdraw} className="form">
+                  <div className="form-group">
+                    <label>Amount ($):</label>
+                    <input
+                      type="number"
+                      name="amount"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <button type="submit" disabled={loading} className="primary-btn">
+                    {loading ? 'Processing...' : 'Withdraw'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Transaction History */}
+            <div>
+              <h3>Transaction History</h3>
+              {transactions.length > 0 ? (
+                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                  {transactions.map((transaction, index) => (
+                    <div key={index} style={{ 
+                      padding: '1rem', 
+                      border: '1px solid #ddd', 
+                      borderRadius: '8px', 
+                      marginBottom: '0.5rem',
+                      backgroundColor: transaction.status === 'APPROVED' ? '#f8f9fa' : '#fff5f5'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span><strong>{transaction.merchant}</strong></span>
+                        <span style={{ color: transaction.amount > 0 ? 'green' : 'red' }}>
+                          ${Math.abs(transaction.amount).toFixed(2)}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                        {transaction.description} • {new Date(transaction.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: '#666' }}>No transactions yet</p>
+              )}
+            </div>
+          </div>
         )}
       </main>
     </div>

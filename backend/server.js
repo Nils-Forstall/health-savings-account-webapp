@@ -131,6 +131,37 @@ app.post('/api/users/create', (req, res) => {
   );
 });
 
+app.post('/api/users/login', (req, res) => {
+  console.log('User login attempt:', req.body);
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+  
+  db.get(`SELECT id, name, email FROM users WHERE email = ? AND password = ?`, 
+    [email, password], 
+    (err, user) => {
+      if (err) {
+        console.log('Login error:', err);
+        return res.status(500).json({ error: 'Login failed' });
+      }
+      
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid email or password' });
+      }
+      
+      console.log('User logged in:', user.id);
+      res.json({ 
+        userId: user.id, 
+        name: user.name, 
+        email: user.email,
+        message: 'Login successful' 
+      });
+    }
+  );
+});
+
 // 2. Create HSA Account
 app.post('/api/hsa/create', (req, res) => {
   console.log('Creating HSA for user:', req.body);
@@ -170,6 +201,117 @@ app.get('/api/hsa/:userId', (req, res) => {
       return res.status(404).json({ error: 'HSA account not found' });
     }
     res.json(row);
+  });
+});
+
+// 3.5. Deposit to HSA Account
+app.post('/api/hsa/deposit', (req, res) => {
+  console.log('HSA deposit:', req.body);
+  const { userId, amount } = req.body;
+  
+  if (!userId || !amount || amount <= 0) {
+    return res.status(400).json({ error: 'Valid user ID and positive amount are required' });
+  }
+  
+  db.get(`SELECT * FROM hsa_accounts WHERE user_id = ?`, [userId], (err, hsaAccount) => {
+    if (err || !hsaAccount) {
+      return res.status(404).json({ error: 'HSA account not found' });
+    }
+    
+    const newBalance = hsaAccount.balance + parseFloat(amount);
+    
+    db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
+      [newBalance, userId], 
+      function(err) {
+        if (err) {
+          console.log('Deposit error:', err);
+          return res.status(500).json({ error: 'Failed to process deposit' });
+        }
+        
+        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
+                VALUES (NULL, ?, 'HSA Deposit', 'Account deposit', 'APPROVED')`,
+          [amount]);
+        
+        console.log('Deposit successful:', amount);
+        res.json({
+          message: 'Deposit successful',
+          amount: parseFloat(amount),
+          newBalance,
+          hsaId: hsaAccount.id
+        });
+      }
+    );
+  });
+});
+
+// 3.6. Withdraw from HSA Account
+app.post('/api/hsa/withdraw', (req, res) => {
+  console.log('HSA withdrawal:', req.body);
+  const { userId, amount } = req.body;
+  
+  if (!userId || !amount || amount <= 0) {
+    return res.status(400).json({ error: 'Valid user ID and positive amount are required' });
+  }
+  
+  db.get(`SELECT * FROM hsa_accounts WHERE user_id = ?`, [userId], (err, hsaAccount) => {
+    if (err || !hsaAccount) {
+      return res.status(404).json({ error: 'HSA account not found' });
+    }
+    
+    if (hsaAccount.balance < amount) {
+      return res.status(400).json({ 
+        error: 'Insufficient funds',
+        availableBalance: hsaAccount.balance 
+      });
+    }
+    
+    const newBalance = hsaAccount.balance - parseFloat(amount);
+    
+    db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
+      [newBalance, userId], 
+      function(err) {
+        if (err) {
+          console.log('Withdrawal error:', err);
+          return res.status(500).json({ error: 'Failed to process withdrawal' });
+        }
+        
+        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
+                VALUES (NULL, ?, 'HSA Withdrawal', 'Account withdrawal', 'APPROVED')`,
+          [-amount]);
+        
+        console.log('Withdrawal successful:', amount);
+        res.json({
+          message: 'Withdrawal successful',
+          amount: parseFloat(amount),
+          newBalance,
+          hsaId: hsaAccount.id
+        });
+      }
+    );
+  });
+});
+
+app.get('/api/hsa/transactions/:userId', (req, res) => {
+  const userId = req.params.userId;
+  
+  db.all(`
+    SELECT t.*, vc.card_number 
+    FROM transactions t
+    LEFT JOIN virtual_cards vc ON t.card_id = vc.id
+    LEFT JOIN hsa_accounts ha ON vc.hsa_account_id = ha.id
+    WHERE ha.user_id = ? OR (t.card_id IS NULL AND t.merchant IN ('HSA Deposit', 'HSA Withdrawal'))
+    ORDER BY t.created_at DESC
+    LIMIT 50
+  `, [userId], (err, transactions) => {
+    if (err) {
+      console.log('Transaction history error:', err);
+      return res.status(500).json({ error: 'Failed to fetch transaction history' });
+    }
+    
+    res.json({ 
+      transactions: transactions || [],
+      count: transactions ? transactions.length : 0
+    });
   });
 });
 
