@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DepositModal from './DepositModal';
 import WithdrawModal from './WithdrawModal';
 import TransactionHistory from './TransactionHistory';
+import ContributionLimits from './ContributionLimits';
+import { hsaService } from '../../services/hsaService';
 
 const Dashboard = ({ 
   user, 
@@ -15,16 +17,39 @@ const Dashboard = ({
 }) => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [contributionRefreshTrigger, setContributionRefreshTrigger] = useState(0);
+  const [contributionLimits, setContributionLimits] = useState(null);
+
+  // Fetch contribution limits on component mount and when refresh is triggered
+  useEffect(() => {
+    const fetchContributionLimits = async () => {
+      if (!user?.userId) return;
+      
+      try {
+        const limits = await hsaService.getContributionLimits(user.userId);
+        setContributionLimits(limits);
+      } catch (error) {
+        console.error('Failed to fetch contribution limits:', error);
+      }
+    };
+
+    fetchContributionLimits();
+  }, [user?.userId, contributionRefreshTrigger]);
 
   const handleDepositSuccess = (newBalance) => {
     onBalanceUpdate(newBalance);
     onTransactionHistoryUpdate();
+    setContributionRefreshTrigger(prev => prev + 1); // Trigger ContributionLimits refresh
   };
 
   const handleWithdrawSuccess = (newBalance) => {
     onBalanceUpdate(newBalance);
     onTransactionHistoryUpdate();
+    setContributionRefreshTrigger(prev => prev + 1); // Trigger ContributionLimits refresh
   };
+
+  // Check if deposits should be disabled
+  const isDepositDisabled = loading || (contributionLimits && contributionLimits.remainingLimit <= 0);
 
   return (
     <div>
@@ -59,11 +84,19 @@ const Dashboard = ({
         </div>
       </div>
 
+      <ContributionLimits user={user} refreshTrigger={contributionRefreshTrigger} />
+
       <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem', justifyContent: 'center' }}>
         <button 
           onClick={() => setIsDepositModalOpen(true)} 
           className="primary-btn"
-          disabled={loading}
+          disabled={isDepositDisabled}
+          style={{
+            opacity: isDepositDisabled ? 0.5 : 1,
+            cursor: isDepositDisabled ? 'not-allowed' : 'pointer',
+            backgroundColor: isDepositDisabled ? '#6c757d' : undefined
+          }}
+          title={contributionLimits && contributionLimits.remainingLimit <= 0 ? 'Annual contribution limit reached' : undefined}
         >
           💰 Deposit Money
         </button>
