@@ -160,12 +160,6 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     e.preventDefault();
 
     // Validate that a qualified expense was selected
-    if (!selectedExpense || !selectedExpense.is_qualified) {
-      setErrorMessage('Please select a qualified HSA expense from the dropdown');
-      addToast('❌ Please select a qualified HSA expense from the dropdown', 'error');
-      setStep('error');
-      return;
-    }
 
     // Validate card information
     if (!validateCardInfo()) {
@@ -181,7 +175,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
         const response = await hsaService.withdraw(user.userId, amount, reason, cleanCardNumber, expiryMonth, expiryYear, cvv);
         setResult(response);
         onSuccess(response.newBalance);
-        addToast(`💸 Successfully withdrew $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
+        addToast(`💸 Successfully reimbursed $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
         handleClose();
       } catch (error) {
         console.error('Withdrawal error:', error);
@@ -257,10 +251,10 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
 
   const getModalTitle = () => {
     switch (step) {
-      case 'loading': return 'Processing Withdrawal...';
-      case 'confirmation': return 'Withdrawal Successful';
-      case 'error': return 'Withdrawal Failed';
-      default: return 'Withdraw Money';
+      case 'loading': return 'Processing Reimbursement...';
+      case 'confirmation': return 'Reimbursement Successful';
+      case 'error': return 'Reimbursement Failed';
+      default: return 'Reimburse';
     }
   };
 
@@ -415,9 +409,17 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 Available balance: ${hsaAccount.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             )}
+            <div style={{ 
+              fontSize: '13px', 
+              color: '#6c757d',
+              marginTop: '6px',
+              lineHeight: '1.4'
+            }}>
+              💳 Reimbursement will be sent to your checking account
+            </div>
           </div>
           <div className="form-group">
-            <label>Reason for withdrawal:</label>
+            <label>Reason for reimbursement:</label>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -425,7 +427,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 onChange={(e) => handleReasonChange(e.target.value)}
                 onFocus={() => reason.length >= 3 && setShowDropdown(expenseOptions.length > 0)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                placeholder="Type at least 3 characters to search HSA expenses..."
+                placeholder="Enter reason for reimbursement (optional: search HSA expenses)"
                 required
               />
               {showDropdown && expenseOptions.length > 0 && (
@@ -546,7 +548,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 marginTop: '6px',
                 lineHeight: '1.4'
               }}>
-                💡 Upload receipts, invoices, or other documentation to support your withdrawal
+                💡 Selecting a qualified expense is optional but recommended for record-keeping. Upload receipts, invoices, or other documentation to support your reimbursement
               </div>
               
               {proofFileName && (
@@ -585,16 +587,8 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
             <button type="button" onClick={handleClose} className="secondary-btn">
               Cancel
             </button>
-            <button 
-              type="submit" 
-              className="primary-btn"
-              disabled={!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense}
-              style={{
-                opacity: (!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense) ? 0.6 : 1,
-                cursor: (!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense) ? 'not-allowed' : 'pointer'
-              }}
-            >
-              Withdraw
+            <button type="submit" className="primary-btn">
+              Reimburse
             </button>
           </div>
         </form>
@@ -602,7 +596,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
 
       {step === 'loading' && (
         <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div style={{ fontSize: '18px', marginBottom: '1rem' }}>Processing your withdrawal...</div>
+          <div style={{ fontSize: '18px', marginBottom: '1rem' }}>Processing your reimbursement...</div>
           <div style={{ 
             width: '40px', 
             height: '40px', 
@@ -625,7 +619,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div style={{ fontSize: '48px', color: '#28a745', marginBottom: '1rem' }}>✅</div>
           <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Withdrawal Successful!
+            Reimbursement Successful!
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <strong>Amount:</strong> ${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -646,7 +640,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div style={{ fontSize: '48px', color: '#dc3545', marginBottom: '1rem' }}>❌</div>
           <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Withdrawal Failed
+            Reimbursement Failed
           </div>
           <div style={{ marginBottom: '2rem', color: '#dc3545' }}>
             {errorMessage}
