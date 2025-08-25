@@ -23,10 +23,11 @@ export const hsaService = {
     return response.data;
   },
 
-  withdraw: async (userId, amount) => {
+  withdraw: async (userId, amount, reason) => {
     const response = await axios.post(`${API_BASE}/hsa/withdraw`, {
       userId,
-      amount: parseFloat(amount)
+      amount: parseFloat(amount),
+      reason
     });
     return response.data;
   },
