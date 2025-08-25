@@ -28,39 +28,34 @@ const Dashboard = ({
 
   return (
     <div>
-      <h3 style={{ marginBottom: '2rem', textAlign: 'left' }}>Welcome back, {user?.name}!</h3>
+      <h2 style={{ marginBottom: '2rem', textAlign: 'left' }}>Welcome back, {user?.name}!</h2>
       
-      <div style={{ 
-        textAlign: 'center', 
-        margin: '2rem 0', 
-        padding: '1.5rem',
-        backgroundColor: '#f5f2e8',
-        borderRadius: '12px',
-        border: '2px solid #e9ecef'
-      }}>
+      <div>
+        <h3 style={{ textAlign: 'left' }}>Current Balance</h3>
         <div style={{ 
-          fontSize: '1.2rem', 
-          color: '#6c757d', 
-          marginBottom: '0.5rem',
-          fontWeight: '500'
+          textAlign: 'left', 
+          margin: '0 0 2rem 0', 
+          padding: '1.5rem',
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          border: '2px solid #e9ecef'
         }}>
-          Current Balance
-        </div>
-        <div style={{ 
-          fontSize: '3rem', 
-          fontWeight: 'bold', 
-          color: '#28a745',
-          marginBottom: '1rem',
-          fontFamily: 'monospace'
-        }}>
-          ${hsaAccount?.balance?.toFixed(2) || '0.00'}
-        </div>
-        <div style={{ 
-          fontSize: '0.9rem', 
-          color: '#6c757d',
-          fontWeight: '500'
-        }}>
-          Account: {hsaAccount?.account_number || hsaAccount?.accountNumber || 'Not Available'}
+          <div style={{ 
+            fontSize: '1.5rem', 
+            fontWeight: 'bold', 
+            color: '#28a745',
+            marginBottom: '1rem',
+            fontFamily: 'monospace'
+          }}>
+            ${hsaAccount?.balance?.toFixed(2) || '0.00'}
+          </div>
+          <div style={{ 
+            fontSize: '0.9rem', 
+            color: '#6c757d',
+            fontWeight: '500'
+          }}>
+            Account: {hsaAccount?.account_number || hsaAccount?.accountNumber || 'Not Available'}
+          </div>
         </div>
       </div>
 
