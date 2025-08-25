@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { authService } from '../../services/authService';
 
-const SignUpForm = ({ onSuccess, onSwitchToLogin, setMessage, setLoading, loading }) => {
+const SignUpForm = ({ onSuccess, onSwitchToLogin, addToast, setLoading, loading }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,14 +20,13 @@ const SignUpForm = ({ onSuccess, onSwitchToLogin, setMessage, setLoading, loadin
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
 
     try {
       const user = await authService.createUser(formData.name, formData.email, formData.password, formData.dateOfBirth, formData.coverageType);
-      setMessage('✅ User account created successfully!');
+      addToast('✅ User account created successfully!', 'success');
       onSuccess(user);
     } catch (error) {
-      setMessage('❌ ' + (error.response?.data?.error || 'Failed to create user'));
+      addToast('❌ ' + (error.response?.data?.error || 'Failed to create user'), 'error');
     }
     
     setLoading(false);

@@ -4,6 +4,7 @@ import SignUpForm from './components/auth/SignUpForm';
 import LoginForm from './components/auth/LoginForm';
 import HSAApplication from './components/hsa/HSAApplication';
 import Dashboard from './components/dashboard/Dashboard';
+import Toast from './components/common/Toast';
 import { hsaService } from './services/hsaService';
 
 function App() {
@@ -13,7 +14,17 @@ function App() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [toasts, setToasts] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const addToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const fetchTransactionHistory = async (userData = user) => {
     if (!userData) return;
@@ -78,11 +89,6 @@ function App() {
           </button>
         )}
         
-        {message && (
-          <div className={`message ${message.includes('❌') ? 'error' : 'success'}`}>
-            {message}
-          </div>
-        )}
       </header>
 
       <main className="App-main">
@@ -90,7 +96,7 @@ function App() {
           <SignUpForm
             onSuccess={handleAuthSuccess}
             onSwitchToLogin={() => setCurrentView('login')}
-            setMessage={setMessage}
+            addToast={addToast}
             setLoading={setLoading}
             loading={loading}
           />
@@ -100,7 +106,7 @@ function App() {
           <LoginForm
             onSuccess={handleAuthSuccess}
             onSwitchToSignUp={() => setCurrentView('frontPage')}
-            setMessage={setMessage}
+            addToast={addToast}
             setLoading={setLoading}
             loading={loading}
           />
@@ -110,7 +116,7 @@ function App() {
           <HSAApplication
             user={user}
             onSuccess={handleHSACreated}
-            setMessage={setMessage}
+            addToast={addToast}
             setLoading={setLoading}
             loading={loading}
           />
@@ -123,12 +129,24 @@ function App() {
             transactions={transactions}
             onBalanceUpdate={handleBalanceUpdate}
             onTransactionHistoryUpdate={fetchTransactionHistory}
-            setMessage={setMessage}
+            addToast={addToast}
             setLoading={setLoading}
             loading={loading}
           />
         )}
       </main>
+
+      {/* Toast Container */}
+      <div className="toast-container">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

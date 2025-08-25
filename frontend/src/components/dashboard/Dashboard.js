@@ -9,7 +9,7 @@ const Dashboard = ({
   transactions, 
   onBalanceUpdate, 
   onTransactionHistoryUpdate,
-  setMessage, 
+  addToast, 
   setLoading, 
   loading 
 }) => {
@@ -88,7 +88,7 @@ const Dashboard = ({
         onClose={() => setIsDepositModalOpen(false)}
         user={user}
         onSuccess={handleDepositSuccess}
-        setMessage={setMessage}
+        addToast={addToast}
         setLoading={setLoading}
         loading={loading}
       />
@@ -98,7 +98,7 @@ const Dashboard = ({
         onClose={() => setIsWithdrawModalOpen(false)}
         user={user}
         onSuccess={handleWithdrawSuccess}
-        setMessage={setMessage}
+        addToast={addToast}
         setLoading={setLoading}
         loading={loading}
       />

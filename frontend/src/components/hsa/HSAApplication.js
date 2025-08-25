@@ -1,17 +1,16 @@
 import React from 'react';
 import { hsaService } from '../../services/hsaService';
 
-const HSAApplication = ({ user, onSuccess, setMessage, setLoading, loading }) => {
+const HSAApplication = ({ user, onSuccess, addToast, setLoading, loading }) => {
   const handleCreateHSA = async () => {
     setLoading(true);
-    setMessage('');
 
     try {
       const hsaAccount = await hsaService.createHSA(user.userId);
-      setMessage('✅ HSA account created successfully!');
+      addToast('✅ HSA account created successfully!', 'success');
       onSuccess(hsaAccount);
     } catch (error) {
-      setMessage('❌ Failed to create HSA account');
+      addToast('❌ Failed to create HSA account', 'error');
     }
     
     setLoading(false);

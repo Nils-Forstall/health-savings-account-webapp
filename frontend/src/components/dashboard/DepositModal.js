@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { hsaService } from '../../services/hsaService';
 
-const DepositModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading, loading }) => {
+const DepositModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, loading }) => {
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState('form'); // 'form', 'loading', 'confirmation', 'error'
   const [result, setResult] = useState(null);
@@ -18,9 +18,11 @@ const DepositModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading
         const response = await hsaService.deposit(user.userId, amount);
         setResult(response);
         onSuccess(response.newBalance);
-        setStep('confirmation');
+        addToast(`💰 Successfully deposited $${parseFloat(amount).toFixed(2)}!`, 'success');
+        handleClose();
       } catch (error) {
         setErrorMessage(error.response?.data?.error || 'Deposit failed');
+        addToast(`❌ ${error.response?.data?.error || 'Deposit failed'}`, 'error');
         setStep('error');
       }
     }, 300);

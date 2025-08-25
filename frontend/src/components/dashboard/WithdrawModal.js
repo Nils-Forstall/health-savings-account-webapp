@@ -3,7 +3,7 @@ import Modal from '../common/Modal';
 import { hsaService } from '../../services/hsaService';
 import axios from 'axios';
 
-const WithdrawModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading, loading }) => {
+const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, loading }) => {
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState('');
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -48,6 +48,7 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoadin
     // Validate that a qualified expense was selected
     if (!selectedExpense || !selectedExpense.is_qualified) {
       setErrorMessage('Please select a qualified HSA expense from the dropdown');
+      addToast('❌ Please select a qualified HSA expense from the dropdown', 'error');
       setStep('error');
       return;
     }
@@ -60,9 +61,11 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoadin
         const response = await hsaService.withdraw(user.userId, amount, reason);
         setResult(response);
         onSuccess(response.newBalance);
-        setStep('confirmation');
+        addToast(`💸 Successfully withdrew $${parseFloat(amount).toFixed(2)} for ${reason}!`, 'success');
+        handleClose();
       } catch (error) {
         setErrorMessage(error.response?.data?.error || 'Withdrawal failed');
+        addToast(`❌ ${error.response?.data?.error || 'Withdrawal failed'}`, 'error');
         setStep('error');
       }
     }, 300);

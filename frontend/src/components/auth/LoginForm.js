@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { authService } from '../../services/authService';
 
-const LoginForm = ({ onSuccess, onSwitchToSignUp, setMessage, setLoading, loading }) => {
+const LoginForm = ({ onSuccess, onSwitchToSignUp, addToast, setLoading, loading }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -17,14 +17,13 @@ const LoginForm = ({ onSuccess, onSwitchToSignUp, setMessage, setLoading, loadin
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
 
     try {
       const user = await authService.login(formData.email, formData.password);
-      setMessage('✅ Login successful!');
+      addToast('✅ Login successful!', 'success');
       onSuccess(user);
     } catch (error) {
-      setMessage('❌ ' + (error.response?.data?.error || 'Login failed'));
+      addToast('❌ ' + (error.response?.data?.error || 'Login failed'), 'error');
     }
     
     setLoading(false);
