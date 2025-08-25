@@ -219,7 +219,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
               </div>
             )}
           </div>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between' }}>
             <button type="button" onClick={handleClose} className="secondary-btn">
               Cancel
             </button>
