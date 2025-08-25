@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { hsaService } from '../../services/hsaService';
+import { handleCurrencyInputChange } from '../../utils/currencyUtils';
 import axios from 'axios';
 
 const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, loading }) => {
@@ -61,7 +62,7 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading,
         const response = await hsaService.withdraw(user.userId, amount, reason);
         setResult(response);
         onSuccess(response.newBalance);
-        addToast(`💸 Successfully withdrew $${parseFloat(amount).toFixed(2)} for ${reason}!`, 'success');
+        addToast(`💸 Successfully withdrew $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
         handleClose();
       } catch (error) {
         setErrorMessage(error.response?.data?.error || 'Withdrawal failed');
@@ -104,10 +105,11 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading,
           <div className="form-group">
             <label>Amount ($):</label>
             <input
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => handleCurrencyInputChange(e, setAmount)}
+              placeholder="0.00"
               required
               autoFocus
             />
@@ -223,13 +225,13 @@ const WithdrawModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading,
             Withdrawal Successful!
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <strong>Amount:</strong> ${parseFloat(amount).toFixed(2)}
+            <strong>Amount:</strong> ${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <strong>Reason:</strong> {reason}
           </div>
           <div style={{ marginBottom: '2rem' }}>
-            <strong>New Balance:</strong> ${result.newBalance.toFixed(2)}
+            <strong>New Balance:</strong> ${result.newBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <button onClick={handleClose} className="primary-btn">
             Done

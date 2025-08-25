@@ -20,7 +20,7 @@ const TransactionHistory = ({ transactions }) => {
                     {transaction.description || (transaction.amount > 0 ? 'Deposit' : 'Withdrawal')}
                   </div>
                   <div style={{ fontSize: '0.9rem', color: '#666' }}>
-                    ${transaction.balance_at_time?.toFixed(2) || '0.00'}
+                    ${transaction.balance_at_time?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -29,7 +29,7 @@ const TransactionHistory = ({ transactions }) => {
                     color: transaction.amount > 0 ? '#28a745' : '#dc3545',
                     fontSize: '1.1rem'
                   }}>
-                    {transaction.amount < 0 ? '-' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                    {transaction.amount < 0 ? '-' : ''}${Math.abs(transaction.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                   <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '2px' }}>
                     {new Date(transaction.created_at).toLocaleDateString()}

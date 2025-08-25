@@ -47,7 +47,7 @@ const Dashboard = ({
             marginBottom: '1rem',
             fontFamily: 'monospace'
           }}>
-            ${hsaAccount?.balance?.toFixed(2) || '0.00'}
+            ${hsaAccount?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
           </div>
           <div style={{ 
             fontSize: '0.9rem', 

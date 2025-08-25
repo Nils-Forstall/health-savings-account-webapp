@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { hsaService } from '../../services/hsaService';
+import { handleCurrencyInputChange } from '../../utils/currencyUtils';
 
 const DepositModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, loading }) => {
   const [amount, setAmount] = useState('');
@@ -18,7 +19,7 @@ const DepositModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, 
         const response = await hsaService.deposit(user.userId, amount);
         setResult(response);
         onSuccess(response.newBalance);
-        addToast(`💰 Successfully deposited $${parseFloat(amount).toFixed(2)}!`, 'success');
+        addToast(`💰 Successfully deposited $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}!`, 'success');
         handleClose();
       } catch (error) {
         setErrorMessage(error.response?.data?.error || 'Deposit failed');
@@ -57,10 +58,11 @@ const DepositModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, 
           <div className="form-group">
             <label>Amount ($):</label>
             <input
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => handleCurrencyInputChange(e, setAmount)}
+              placeholder="0.00"
               required
               autoFocus
             />
@@ -104,13 +106,13 @@ const DepositModal = ({ isOpen, onClose, user, onSuccess, addToast, setLoading, 
             Deposit Successful!
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <strong>Amount:</strong> ${parseFloat(amount).toFixed(2)}
+            <strong>Amount:</strong> ${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <strong>New Balance:</strong> ${result.newBalance.toFixed(2)}
+            <strong>New Balance:</strong> ${result.newBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ marginBottom: '2rem' }}>
-            <strong>Remaining Annual Limit:</strong> ${result.remainingLimit.toFixed(2)}
+            <strong>Remaining Annual Limit:</strong> ${result.remainingLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <button onClick={handleClose} className="primary-btn">
             Done
