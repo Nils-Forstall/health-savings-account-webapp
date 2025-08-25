@@ -18,9 +18,17 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE,
     password TEXT,
-    name TEXT,
+    first_name TEXT,
+    last_name TEXT,
     date_of_birth DATE,
     coverage_type TEXT CHECK(coverage_type IN ('individual', 'family')),
+    insurance_provider TEXT,
+    has_hdhp BOOLEAN,
+    no_government_insurance BOOLEAN,
+    no_healthcare_fsa BOOLEAN,
+    not_dependent BOOLEAN,
+    insurance_card_front TEXT,
+    insurance_card_back TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
   
@@ -152,18 +160,66 @@ function calculateContributionLimit(dateOfBirth, coverageType, year = new Date()
 // 1. Create User Account
 app.post('/api/users/create', (req, res) => {
   console.log('Creating user:', req.body);
-  const { name, email, password, dateOfBirth, coverageType } = req.body;
+  const { 
+    firstName, 
+    lastName, 
+    email, 
+    password, 
+    dateOfBirth, 
+    coverageType,
+    insuranceProvider,
+    insuranceCardFront,
+    insuranceCardBack,
+    hasHDHP,
+    noGovernmentInsurance,
+    noHealthcareFSA,
+    notDependent
+  } = req.body;
   
-  if (!name || !email || !password || !dateOfBirth || !coverageType) {
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!firstName || !lastName || !email || !password || !dateOfBirth || !coverageType || !insuranceProvider) {
+    return res.status(400).json({ error: 'All basic fields are required' });
   }
   
   if (!['individual', 'family'].includes(coverageType)) {
     return res.status(400).json({ error: 'Coverage type must be individual or family' });
   }
   
-  db.run(`INSERT INTO users (name, email, password, date_of_birth, coverage_type) VALUES (?, ?, ?, ?, ?)`, 
-    [name, email, password, dateOfBirth, coverageType], 
+  if (!hasHDHP || !noGovernmentInsurance || !noHealthcareFSA || !notDependent) {
+    return res.status(400).json({ error: 'All HSA eligibility requirements must be confirmed' });
+  }
+  
+  const fullName = `${firstName} ${lastName}`;
+  
+  db.run(`INSERT INTO users (
+    first_name, 
+    last_name, 
+    email, 
+    password, 
+    date_of_birth, 
+    coverage_type,
+    insurance_provider,
+    has_hdhp,
+    no_government_insurance,
+    no_healthcare_fsa,
+    not_dependent,
+    insurance_card_front,
+    insurance_card_back
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+    [
+      firstName, 
+      lastName, 
+      email, 
+      password, 
+      dateOfBirth, 
+      coverageType,
+      insuranceProvider,
+      hasHDHP,
+      noGovernmentInsurance,
+      noHealthcareFSA,
+      notDependent,
+      insuranceCardFront,
+      insuranceCardBack
+    ], 
     function(err) {
       if (err) {
         console.log('User creation error:', err);
@@ -176,7 +232,7 @@ app.post('/api/users/create', (req, res) => {
       console.log('User created with ID:', this.lastID);
       res.json({ 
         userId: this.lastID, 
-        name, 
+        name: fullName, 
         email,
         message: 'User created successfully' 
       });
@@ -192,7 +248,7 @@ app.post('/api/users/login', (req, res) => {
     return res.status(400).json({ error: 'Email and password are required' });
   }
   
-  db.get(`SELECT id, name, email FROM users WHERE email = ? AND password = ?`, 
+  db.get(`SELECT id, first_name, last_name, email FROM users WHERE email = ? AND password = ?`, 
     [email, password], 
     (err, user) => {
       if (err) {
@@ -204,10 +260,11 @@ app.post('/api/users/login', (req, res) => {
         return res.status(401).json({ error: 'Invalid email or password' });
       }
       
+      const fullName = `${user.first_name} ${user.last_name}`;
       console.log('User logged in:', user.id);
       res.json({ 
         userId: user.id, 
-        name: user.name, 
+        name: fullName, 
         email: user.email,
         message: 'Login successful' 
       });
