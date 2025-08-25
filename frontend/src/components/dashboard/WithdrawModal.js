@@ -181,35 +181,29 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
         const response = await hsaService.withdraw(user.userId, amount, reason, cleanCardNumber, expiryMonth, expiryYear, cvv);
         setResult(response);
         onSuccess(response.newBalance);
-        addToast(`💸 Successfully withdrew $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
+        addToast(`💸 Successfully reimbursed $${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} for ${reason}!`, 'success');
         handleClose();
       } catch (error) {
-        console.error('Withdrawal error:', error);
+        console.error('Reumbursement error:', error);
         
         // Extract detailed error information
         const errorData = error.response?.data;
-        let detailedMessage = 'Withdrawal failed';
+        let detailedMessage = 'Reimbursement failed';
         
         if (errorData?.error) {
-          if (errorData.error.includes('Invalid card')) {
-            detailedMessage = 'Invalid card information. Please check your card number, expiry date, and CVV.';
-          } else if (errorData.error.includes('Card not found')) {
-            detailedMessage = 'Card not found. Please verify your card details.';
-          } else if (errorData.error.includes('Card expired')) {
-            detailedMessage = 'Card has expired. Please use a valid card.';
-          } else if (errorData.error.includes('Insufficient funds')) {
+          if (errorData.error.includes('Insufficient funds')) {
             detailedMessage = `Insufficient funds. Available balance: $${errorData.availableBalance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'Unknown'}`;
           } else if (errorData.error.includes('HSA account not found')) {
             detailedMessage = 'HSA account not found. Please contact support.';
           } else if (errorData.error.includes('Valid user ID and positive amount are required')) {
-            detailedMessage = 'Invalid withdrawal amount. Please enter a valid positive amount.';
-          } else if (errorData.error.includes('Failed to process withdrawal')) {
+            detailedMessage = 'Invalid reimbursement amount. Please enter a valid positive amount.';
+          } else if (errorData.error.includes('Failed to process reimbursement')) {
             detailedMessage = 'Transaction processing failed. Please try again or contact support.';
           } else {
             detailedMessage = errorData.error;
           }
         } else if (error.response?.status === 400) {
-          detailedMessage = 'Invalid withdrawal request. Please check your input and try again.';
+          detailedMessage = 'Invalid reimbursement request. Please check your input and try again.';
         } else if (error.response?.status === 404) {
           detailedMessage = 'Account not found. Please contact support.';
         } else if (error.response?.status >= 500) {
@@ -257,10 +251,10 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
 
   const getModalTitle = () => {
     switch (step) {
-      case 'loading': return 'Processing Withdrawal...';
-      case 'confirmation': return 'Withdrawal Successful';
-      case 'error': return 'Withdrawal Failed';
-      default: return 'Withdraw Money';
+      case 'loading': return 'Processing Reimbursement...';
+      case 'confirmation': return 'Reimbursement Successful';
+      case 'error': return 'Reimbursement Failed';
+      default: return 'Reimburse Expense';
     }
   };
 
@@ -268,120 +262,6 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     <Modal isOpen={isOpen} onClose={step === 'loading' ? null : handleClose} title={getModalTitle()}>
       {step === 'form' && (
         <form onSubmit={handleSubmit} className="form">
-          <div className="form-group">
-            <label>Card Information:</label>
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '14px',
-                fontWeight: '500'
-              }}>
-                Card Number
-              </label>
-              <input
-                type="text"
-                value={cardNumber}
-                onChange={handleCardNumberChange}
-                placeholder="1234 5678 9012 3456"
-                required
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e9ecef',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
-                  boxSizing: 'border-box',
-                  fontFamily: 'monospace'
-                }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '0.5rem', 
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  Expiry Month
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="12"
-                  value={expiryMonth}
-                  onChange={(e) => setExpiryMonth(e.target.value)}
-                  placeholder="MM"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '2px solid #e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box'
-                  }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '0.5rem', 
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  Expiry Year
-                </label>
-                <input
-                  type="number"
-                  min={new Date().getFullYear()}
-                  max={new Date().getFullYear() + 10}
-                  value={expiryYear}
-                  onChange={(e) => setExpiryYear(e.target.value)}
-                  placeholder="YYYY"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '2px solid #e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box'
-                  }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '0.5rem', 
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  CVV
-                </label>
-                <input
-                  type="text"
-                  maxLength="4"
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '2px solid #e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box',
-                    fontFamily: 'monospace'
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          
           <div className="form-group">
             <label>Amount ($):</label>
             <input
@@ -417,7 +297,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
             )}
           </div>
           <div className="form-group">
-            <label>Reason for withdrawal:</label>
+            <label>Expense to reimburse:</label>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -425,7 +305,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 onChange={(e) => handleReasonChange(e.target.value)}
                 onFocus={() => reason.length >= 3 && setShowDropdown(expenseOptions.length > 0)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                placeholder="Type at least 3 characters to search HSA expenses..."
+                placeholder="Search for HSA-qualified expenses..."
                 required
               />
               {showDropdown && expenseOptions.length > 0 && (
@@ -486,7 +366,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
               marginTop: '6px',
               lineHeight: '1.4'
             }}>
-              Only HSA-qualified medical expenses are allowed (prescriptions, doctor visits, medical equipment, etc.)
+              Only HSA-qualified medical expenses will be reimbursed (prescriptions, doctor visits, medical equipment, etc.)
             </div>
             {selectedExpense && (
               <div style={{
@@ -546,7 +426,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 marginTop: '6px',
                 lineHeight: '1.4'
               }}>
-                💡 Upload receipts, invoices, or other documentation to support your withdrawal
+                💡 Upload receipts, invoices, or other documentation to support your reimbursement
               </div>
               
               {proofFileName && (
@@ -594,7 +474,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 cursor: (!cardNumber || !expiryMonth || !expiryYear || !cvv || !amount || !selectedExpense) ? 'not-allowed' : 'pointer'
               }}
             >
-              Withdraw
+              Reimburse
             </button>
           </div>
         </form>
@@ -602,7 +482,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
 
       {step === 'loading' && (
         <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div style={{ fontSize: '18px', marginBottom: '1rem' }}>Processing your withdrawal...</div>
+          <div style={{ fontSize: '18px', marginBottom: '1rem' }}>Processing your reimbursement...</div>
           <div style={{ 
             width: '40px', 
             height: '40px', 
@@ -625,7 +505,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div style={{ fontSize: '48px', color: '#28a745', marginBottom: '1rem' }}>✅</div>
           <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Withdrawal Successful!
+            Reimbursement successful!
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <strong>Amount:</strong> ${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -646,7 +526,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div style={{ fontSize: '48px', color: '#dc3545', marginBottom: '1rem' }}>❌</div>
           <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Withdrawal Failed
+            Reimbursement Failed
           </div>
           <div style={{ marginBottom: '2rem', color: '#dc3545' }}>
             {errorMessage}

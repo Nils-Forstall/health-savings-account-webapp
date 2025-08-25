@@ -164,9 +164,9 @@ const Dashboard = ({
                 fontSize: '0.9rem',
                 padding: '0.5rem 1rem'
               }}
-              title={hsaAccount?.balance <= 0 ? 'No funds available for withdrawal' : undefined}
+              title={hsaAccount?.balance <= 0 ? 'No funds available' : undefined}
             >
-              💸 Withdraw Money
+              💸 Reimburse Expense
             </button>
           </div>
         </div>
