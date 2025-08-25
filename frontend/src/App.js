@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import SignUpForm from './components/auth/SignUpForm';
+import MultiStepSignup from './components/auth/MultiStepSignup';
 import LoginForm from './components/auth/LoginForm';
 import HSAApplication from './components/hsa/HSAApplication';
 import Dashboard from './components/dashboard/Dashboard';
@@ -80,8 +80,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>🏥 HSA Web Application</h1>
-        <p>Health Savings Account Management System</p>
+        <h1>🛡️ ForsShield</h1>
+        <p>Your Health Savings Account Management Platform</p>
         
         {isAuthenticated && (
           <button onClick={handleLogout} className="reset-btn" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
@@ -93,7 +93,7 @@ function App() {
 
       <main className="App-main">
         {currentView === 'frontPage' && (
-          <SignUpForm
+          <MultiStepSignup
             onSuccess={handleAuthSuccess}
             onSwitchToLogin={() => setCurrentView('login')}
             addToast={addToast}
