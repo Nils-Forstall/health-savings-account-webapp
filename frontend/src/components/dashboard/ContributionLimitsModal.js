@@ -49,7 +49,7 @@ const ContributionLimitsModal = ({ isOpen, onClose, contributionData, user }) =>
           <p style={{ margin: '0 0 0.75rem 0' }}>
             <strong>Base Contribution Limit ({year}):</strong>
           </p>
-          <ul style={{ margin: '0 0 1rem 1.5rem', paddingLeft: '0' }}>
+          <ul style={{ margin: '0 0 1rem 0', paddingLeft: '1.5rem' }}>
             <li>Individual coverage: $4,300</li>
             <li>Family coverage: $8,550</li>
           </ul>
@@ -74,7 +74,7 @@ const ContributionLimitsModal = ({ isOpen, onClose, contributionData, user }) =>
 
         <h5 style={{ marginBottom: '0.75rem', color: '#495057' }}>Important Notes</h5>
         
-        <ul style={{ margin: '0 0 1.5rem 1.5rem', paddingLeft: '0' }}>
+        <ul style={{ margin: '0 0 1.5rem 0', paddingLeft: '1.5rem' }}>
           <li style={{ marginBottom: '0.5rem' }}>
             These limits are set annually by the IRS and may change each year
           </li>

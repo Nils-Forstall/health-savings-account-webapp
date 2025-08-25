@@ -132,9 +132,14 @@ function generateAccountNumber() {
 function isCatchUpEligible(dateOfBirth, year = new Date().getFullYear()) {
   const birthDate = new Date(dateOfBirth);
   const birthYear = birthDate.getFullYear();
-  const age = year - birthYear;
+  const birthMonth = birthDate.getMonth();
+  const birthDay = birthDate.getDate();
   
-  return age >= 55;
+  const ageByEndOfYear = year - birthYear;
+  const birthdayThisYear = new Date(year, birthMonth, birthDay);
+  const endOfYear = new Date(year, 11, 31); // December 31st
+  
+  return ageByEndOfYear >= 55 || (ageByEndOfYear === 54 && birthdayThisYear <= endOfYear);
 }
 
 // Helper function to get base annual HSA contribution limit
