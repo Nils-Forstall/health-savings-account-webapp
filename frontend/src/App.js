@@ -184,7 +184,6 @@ function App() {
 
       setVirtualCard(response.data);
       setMessage('✅ Virtual debit card issued successfully!');
-      setCurrentStep('transaction');
     } catch (error) {
       setMessage('❌ Failed to issue card');
     }
