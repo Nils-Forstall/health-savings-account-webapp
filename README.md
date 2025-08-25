@@ -81,7 +81,7 @@ node scripts/populate-sample-expenses.js
 cd backend
 node server.js
 ```
-The backend will start on `http://localhost:5000`
+The backend will start on `http://localhost:3001`
 
 2. **Start the Frontend Development Server** (Terminal 2):
 ```bash
@@ -178,7 +178,7 @@ The backend includes expense validation testing through the scraper modules.
 ### Common Issues
 
 1. **Port Already in Use**:
-   - Backend (5000): Kill any process using port 5000
+   - Backend (3001): Kill any process using port 3001
    - Frontend (3000): The React dev server will automatically find an available port
 
 2. **Chrome/Selenium Issues**:
@@ -208,16 +208,6 @@ DEBUG=* node server.js
 - `frontend/src/App.js` - Main React application component
 - `frontend/src/components/dashboard/Dashboard.js` - Main dashboard interface
 - `backend/expenses-simplified.json` - Local expense validation database
-
-## 🔮 Future Enhancements
-
-If given additional development time, priority features would include:
-
-1. **Enhanced Security**: User authentication, JWT tokens, password hashing
-2. **Real-time Notifications**: Transaction alerts and balance updates
-3. **Advanced Reporting**: Detailed spending analytics and tax reporting
-4. **Mobile Responsiveness**: Optimized mobile experience
-5. **Integration Testing**: Comprehensive test suite for all API endpoints
 
 ## 📝 Notes
 
