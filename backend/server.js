@@ -317,7 +317,7 @@ app.post('/api/hsa/deposit', (req, res) => {
               [userId, currentYear, userId, currentYear, parseFloat(amount)]);
             
             db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
-                    VALUES (NULL, ?, 'HSA Deposit', 'Account deposit', 'APPROVED', ?)`,
+                    VALUES (NULL, ?, 'HSA Deposit', 'Deposit', 'APPROVED', ?)`,
               [amount, accountData.id]);
             
             console.log('Deposit successful:', amount);
@@ -339,7 +339,7 @@ app.post('/api/hsa/deposit', (req, res) => {
 // 3.6. Withdraw from HSA Account
 app.post('/api/hsa/withdraw', (req, res) => {
   console.log('HSA withdrawal:', req.body);
-  const { userId, amount } = req.body;
+  const { userId, amount, reason } = req.body;
   
   if (!userId || !amount || amount <= 0) {
     return res.status(400).json({ error: 'Valid user ID and positive amount are required' });
@@ -368,8 +368,8 @@ app.post('/api/hsa/withdraw', (req, res) => {
         }
         
         db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
-                VALUES (NULL, ?, 'HSA Withdrawal', 'Account withdrawal', 'APPROVED', ?)`,
-          [-amount, hsaAccount.id]);
+                VALUES (NULL, ?, 'HSA Withdrawal', ?, 'APPROVED', ?)`,
+          [-amount, reason || 'Account withdrawal', hsaAccount.id]);
         
         console.log('Withdrawal successful:', amount);
         res.json({
@@ -386,24 +386,43 @@ app.post('/api/hsa/withdraw', (req, res) => {
 app.get('/api/hsa/transactions/:userId', (req, res) => {
   const userId = req.params.userId;
   
-  db.all(`
-    SELECT t.*, vc.card_number
-    FROM transactions t
-    LEFT JOIN virtual_cards vc ON t.card_id = vc.id
-    LEFT JOIN hsa_accounts ha ON (vc.hsa_account_id = ha.id OR t.hsa_account_id = ha.id)
-    WHERE ha.user_id = ?
-    ORDER BY t.created_at DESC
-    LIMIT 50
-  `, [userId], (err, transactions) => {
-    if (err) {
-      console.log('Transaction history error:', err);
-      return res.status(500).json({ error: 'Failed to fetch transaction history' });
+  // First get current balance
+  db.get(`SELECT balance FROM hsa_accounts WHERE user_id = ?`, [userId], (err, account) => {
+    if (err || !account) {
+      return res.status(404).json({ error: 'HSA account not found' });
     }
     
-    console.log(`Found ${transactions ? transactions.length : 0} transactions for user ${userId}`);
-    res.json({ 
-      transactions: transactions || [],
-      count: transactions ? transactions.length : 0
+    // Get transactions ordered by date (newest first)
+    db.all(`
+      SELECT t.*, vc.card_number
+      FROM transactions t
+      LEFT JOIN virtual_cards vc ON t.card_id = vc.id
+      LEFT JOIN hsa_accounts ha ON (vc.hsa_account_id = ha.id OR t.hsa_account_id = ha.id)
+      WHERE ha.user_id = ?
+      ORDER BY t.created_at DESC
+      LIMIT 50
+    `, [userId], (err, transactions) => {
+      if (err) {
+        console.log('Transaction history error:', err);
+        return res.status(500).json({ error: 'Failed to fetch transaction history' });
+      }
+      
+      // Calculate balance at time of each transaction (working backwards from current balance)
+      let runningBalance = account.balance;
+      const transactionsWithBalance = transactions.map(transaction => {
+        const balanceAtTime = runningBalance;
+        runningBalance -= transaction.amount; // Subtract to get previous balance
+        return {
+          ...transaction,
+          balance_at_time: balanceAtTime
+        };
+      });
+      
+      console.log(`Found ${transactions ? transactions.length : 0} transactions for user ${userId}`);
+      res.json({ 
+        transactions: transactionsWithBalance || [],
+        count: transactionsWithBalance ? transactionsWithBalance.length : 0
+      });
     });
   });
 });

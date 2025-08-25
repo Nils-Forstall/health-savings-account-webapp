@@ -14,14 +14,27 @@ const TransactionHistory = ({ transactions }) => {
               marginBottom: '0.5rem',
               backgroundColor: transaction.status === 'APPROVED' ? '#f8f9fa' : '#fff5f5'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span><strong>{transaction.merchant}</strong></span>
-                <span style={{ color: transaction.amount > 0 ? 'green' : 'red' }}>
-                  ${Math.abs(transaction.amount).toFixed(2)}
-                </span>
-              </div>
-              <div style={{ fontSize: '0.9rem', color: '#666' }}>
-                {transaction.description} • {new Date(transaction.created_at).toLocaleDateString()}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1, textAlign: 'left' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                    {transaction.description || (transaction.amount > 0 ? 'Deposit' : 'Withdrawal')}
+                  </div>
+                  <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                    ${transaction.balance_at_time?.toFixed(2) || '0.00'}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ 
+                    fontWeight: 'bold',
+                    color: transaction.amount > 0 ? '#28a745' : '#dc3545',
+                    fontSize: '1.1rem'
+                  }}>
+                    {transaction.amount < 0 ? '-' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '2px' }}>
+                    {new Date(transaction.created_at).toLocaleDateString()}
+                  </div>
+                </div>
               </div>
             </div>
           ))}
