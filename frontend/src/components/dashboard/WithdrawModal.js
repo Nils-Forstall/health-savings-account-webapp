@@ -91,12 +91,6 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
     e.preventDefault();
 
     // Validate that a qualified expense was selected
-    if (!selectedExpense || !selectedExpense.is_qualified) {
-      setErrorMessage('Please select a qualified HSA expense from the dropdown');
-      addToast('❌ Please select a qualified HSA expense from the dropdown', 'error');
-      setStep('error');
-      return;
-    }
 
     setStep('loading');
     
@@ -199,7 +193,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 onChange={(e) => handleReasonChange(e.target.value)}
                 onFocus={() => reason.length >= 3 && setShowDropdown(expenseOptions.length > 0)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                placeholder="Type at least 3 characters to search HSA expenses..."
+                placeholder="Enter reason for reimbursement (optional: search HSA expenses)"
                 required
               />
               {showDropdown && expenseOptions.length > 0 && (
@@ -320,7 +314,7 @@ const WithdrawModal = ({ isOpen, onClose, user, hsaAccount, onSuccess, addToast,
                 marginTop: '6px',
                 lineHeight: '1.4'
               }}>
-                💡 Upload receipts, invoices, or other documentation to support your reimbursement
+                💡 Selecting a qualified expense is optional but recommended for record-keeping. Upload receipts, invoices, or other documentation to support your reimbursement
               </div>
               
               {proofFileName && (
