@@ -13,7 +13,7 @@ const DepositModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading
 
     try {
       const response = await hsaService.deposit(user.userId, amount);
-      setLocalMessage(`✅ Deposit successful! New balance: $${response.newBalance.toFixed(2)}`);
+      setLocalMessage(`✅ Deposit successful! New balance: $${response.newBalance.toFixed(2)}. Remaining annual limit: $${response.remainingLimit.toFixed(2)}`);
       setAmount('');
       onSuccess(response.newBalance);
       setTimeout(() => {

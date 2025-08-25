@@ -19,6 +19,8 @@ db.serialize(() => {
     email TEXT UNIQUE,
     password TEXT,
     name TEXT,
+    date_of_birth DATE,
+    coverage_type TEXT CHECK(coverage_type IN ('individual', 'family')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
   
@@ -87,6 +89,17 @@ db.serialize(() => {
     ('DCFSA', 'Dependent Care Flexible Spending Account qualified expenses'),
     ('LPFSA', 'Limited Purpose Flexible Spending Account qualified expenses'),
     ('HRA', 'Health Reimbursement Account qualified expenses')`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS annual_contributions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    year INTEGER,
+    total_contributed REAL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    UNIQUE(user_id, year)
+  )`);
 });
 
 // Helper functions
@@ -98,19 +111,50 @@ function generateAccountNumber() {
   return 'HSA' + Math.random().toString().slice(2, 11);
 }
 
+function calculateContributionLimit(dateOfBirth, coverageType, year = new Date().getFullYear()) {
+  const birthDate = new Date(dateOfBirth);
+  const birthYear = birthDate.getFullYear();
+  const age = year - birthYear;
+  
+  console.log('Date parsing debug:', {
+    originalDateOfBirth: dateOfBirth,
+    parsedBirthDate: birthDate,
+    birthYear,
+    currentYear: year,
+    calculatedAge: age
+  });
+  
+  let baseLimit;
+  if (year === 2025) {
+    baseLimit = coverageType === 'family' ? 8550 : 4300;
+  } else if (year === 2026) {
+    baseLimit = coverageType === 'family' ? 8750 : 4400;
+  } else {
+    baseLimit = coverageType === 'family' ? 8750 : 4400;
+  }
+  
+  const catchUpLimit = age >= 55 ? 1000 : 0;
+  
+  return baseLimit + catchUpLimit;
+}
+
 // API Endpoints
 
 // 1. Create User Account
 app.post('/api/users/create', (req, res) => {
   console.log('Creating user:', req.body);
-  const { name, email, password } = req.body;
+  const { name, email, password, dateOfBirth, coverageType } = req.body;
   
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !dateOfBirth || !coverageType) {
     return res.status(400).json({ error: 'All fields are required' });
   }
   
-  db.run(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, 
-    [name, email, password], 
+  if (!['individual', 'family'].includes(coverageType)) {
+    return res.status(400).json({ error: 'Coverage type must be individual or family' });
+  }
+  
+  db.run(`INSERT INTO users (name, email, password, date_of_birth, coverage_type) VALUES (?, ?, ?, ?, ?)`, 
+    [name, email, password, dateOfBirth, coverageType], 
     function(err) {
       if (err) {
         console.log('User creation error:', err);
@@ -213,34 +257,73 @@ app.post('/api/hsa/deposit', (req, res) => {
     return res.status(400).json({ error: 'Valid user ID and positive amount are required' });
   }
   
-  db.get(`SELECT * FROM hsa_accounts WHERE user_id = ?`, [userId], (err, hsaAccount) => {
-    if (err || !hsaAccount) {
+  db.get(`SELECT u.date_of_birth, u.coverage_type, ha.* FROM hsa_accounts ha 
+          JOIN users u ON ha.user_id = u.id 
+          WHERE ha.user_id = ?`, [userId], (err, accountData) => {
+    if (err || !accountData) {
       return res.status(404).json({ error: 'HSA account not found' });
     }
     
-    const newBalance = hsaAccount.balance + parseFloat(amount);
+    const currentYear = new Date().getFullYear();
+    const annualLimit = calculateContributionLimit(accountData.date_of_birth, accountData.coverage_type, currentYear);
+    console.log('Contribution limit calculation:', {
+      dateOfBirth: accountData.date_of_birth,
+      coverageType: accountData.coverage_type,
+      currentYear,
+      annualLimit
+    });
     
-    db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
-      [newBalance, userId], 
-      function(err) {
-        if (err) {
-          console.log('Deposit error:', err);
-          return res.status(500).json({ error: 'Failed to process deposit' });
+    db.get(`SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?`, 
+      [userId, currentYear], (err, contributionData) => {
+        const currentContributions = contributionData ? contributionData.total_contributed : 0;
+        const remainingLimit = annualLimit - currentContributions;
+        console.log('Contribution validation:', {
+          currentContributions,
+          remainingLimit,
+          depositAmount: parseFloat(amount),
+          wouldExceed: parseFloat(amount) > remainingLimit
+        });
+        
+        if (parseFloat(amount) > remainingLimit) {
+          return res.status(400).json({ 
+            error: `Contribution exceeds annual limit. Remaining limit: $${remainingLimit.toFixed(2)}`,
+            annualLimit,
+            currentContributions,
+            remainingLimit
+          });
         }
         
-        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
-                VALUES (NULL, ?, 'HSA Deposit', 'Account deposit', 'APPROVED')`,
-          [amount]);
+        const newBalance = accountData.balance + parseFloat(amount);
         
-        console.log('Deposit successful:', amount);
-        res.json({
-          message: 'Deposit successful',
-          amount: parseFloat(amount),
-          newBalance,
-          hsaId: hsaAccount.id
-        });
-      }
-    );
+        db.run(`UPDATE hsa_accounts SET balance = ? WHERE user_id = ?`, 
+          [newBalance, userId], 
+          function(err) {
+            if (err) {
+              console.log('Deposit error:', err);
+              return res.status(500).json({ error: 'Failed to process deposit' });
+            }
+            
+            db.run(`INSERT OR REPLACE INTO annual_contributions (user_id, year, total_contributed, updated_at) 
+                    VALUES (?, ?, COALESCE((SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?), 0) + ?, CURRENT_TIMESTAMP)`,
+              [userId, currentYear, userId, currentYear, parseFloat(amount)]);
+            
+            db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
+                    VALUES (NULL, ?, 'HSA Deposit', 'Account deposit', 'APPROVED')`,
+              [amount]);
+            
+            console.log('Deposit successful:', amount);
+            res.json({
+              message: 'Deposit successful',
+              amount: parseFloat(amount),
+              newBalance,
+              hsaId: accountData.id,
+              annualLimit,
+              currentContributions: currentContributions + parseFloat(amount),
+              remainingLimit: remainingLimit - parseFloat(amount)
+            });
+          }
+        );
+      });
   });
 });
 

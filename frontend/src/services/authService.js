@@ -11,11 +11,13 @@ export const authService = {
     return response.data;
   },
 
-  createUser: async (name, email, password) => {
+  createUser: async (name, email, password, dateOfBirth, coverageType) => {
     const response = await axios.post(`${API_BASE}/users/create`, {
       name,
       email,
-      password
+      password,
+      dateOfBirth,
+      coverageType
     });
     return response.data;
   }
