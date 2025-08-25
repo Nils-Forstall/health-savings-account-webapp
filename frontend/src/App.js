@@ -15,11 +15,11 @@ function App() {
   const [message, setMessage] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const fetchTransactionHistory = async () => {
-    if (!user) return;
+  const fetchTransactionHistory = async (userData = user) => {
+    if (!userData) return;
     
     try {
-      const response = await hsaService.getTransactions(user.userId);
+      const response = await hsaService.getTransactions(userData.userId);
       setTransactions(response.transactions);
     } catch (error) {
       console.error('Failed to fetch transaction history:', error);
@@ -34,13 +34,13 @@ function App() {
       const hsaData = await hsaService.getHSA(userData.userId);
       setHsaAccount(hsaData);
       setCurrentView('dashboard');
-      fetchTransactionHistory();
+      fetchTransactionHistory(userData);
     } catch (hsaError) {
       try {
         const newHsaAccount = await hsaService.createHSA(userData.userId);
         setHsaAccount(newHsaAccount);
         setCurrentView('dashboard');
-        fetchTransactionHistory();
+        fetchTransactionHistory(userData);
       } catch (createError) {
         setCurrentView('hsaApplication');
       }
@@ -50,7 +50,7 @@ function App() {
   const handleHSACreated = (hsaData) => {
     setHsaAccount(hsaData);
     setCurrentView('dashboard');
-    fetchTransactionHistory();
+    fetchTransactionHistory(user);
   };
 
   const handleBalanceUpdate = (newBalance) => {

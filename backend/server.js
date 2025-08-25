@@ -48,12 +48,14 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     card_id INTEGER,
+    hsa_account_id INTEGER,
     amount REAL,
     merchant TEXT,
     description TEXT,
     status TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(card_id) REFERENCES virtual_cards(id)
+    FOREIGN KEY(card_id) REFERENCES virtual_cards(id),
+    FOREIGN KEY(hsa_account_id) REFERENCES hsa_accounts(id)
   )`);
 
   // Expense categories table for HSA validation
@@ -82,6 +84,13 @@ db.serialize(() => {
   db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_qualified ON expenses(is_qualified)`);
   db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_keywords ON expenses(keywords)`);
   db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id)`);
+
+  // Add hsa_account_id column to existing transactions table if it doesn't exist
+  db.run(`ALTER TABLE transactions ADD COLUMN hsa_account_id INTEGER REFERENCES hsa_accounts(id)`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.log('Note: hsa_account_id column may already exist or there was an error:', err.message);
+    }
+  });
 
   db.run(`INSERT OR IGNORE INTO expense_categories (name, description) VALUES 
     ('HSA', 'Health Savings Account qualified expenses'),
@@ -307,9 +316,9 @@ app.post('/api/hsa/deposit', (req, res) => {
                     VALUES (?, ?, COALESCE((SELECT total_contributed FROM annual_contributions WHERE user_id = ? AND year = ?), 0) + ?, CURRENT_TIMESTAMP)`,
               [userId, currentYear, userId, currentYear, parseFloat(amount)]);
             
-            db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
-                    VALUES (NULL, ?, 'HSA Deposit', 'Account deposit', 'APPROVED')`,
-              [amount]);
+            db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
+                    VALUES (NULL, ?, 'HSA Deposit', 'Account deposit', 'APPROVED', ?)`,
+              [amount, accountData.id]);
             
             console.log('Deposit successful:', amount);
             res.json({
@@ -358,9 +367,9 @@ app.post('/api/hsa/withdraw', (req, res) => {
           return res.status(500).json({ error: 'Failed to process withdrawal' });
         }
         
-        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
-                VALUES (NULL, ?, 'HSA Withdrawal', 'Account withdrawal', 'APPROVED')`,
-          [-amount]);
+        db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
+                VALUES (NULL, ?, 'HSA Withdrawal', 'Account withdrawal', 'APPROVED', ?)`,
+          [-amount, hsaAccount.id]);
         
         console.log('Withdrawal successful:', amount);
         res.json({
@@ -378,11 +387,11 @@ app.get('/api/hsa/transactions/:userId', (req, res) => {
   const userId = req.params.userId;
   
   db.all(`
-    SELECT t.*, vc.card_number 
+    SELECT t.*, vc.card_number
     FROM transactions t
     LEFT JOIN virtual_cards vc ON t.card_id = vc.id
-    LEFT JOIN hsa_accounts ha ON vc.hsa_account_id = ha.id
-    WHERE ha.user_id = ? OR (t.card_id IS NULL AND t.merchant IN ('HSA Deposit', 'HSA Withdrawal'))
+    LEFT JOIN hsa_accounts ha ON (vc.hsa_account_id = ha.id OR t.hsa_account_id = ha.id)
+    WHERE ha.user_id = ?
     ORDER BY t.created_at DESC
     LIMIT 50
   `, [userId], (err, transactions) => {
@@ -391,6 +400,7 @@ app.get('/api/hsa/transactions/:userId', (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch transaction history' });
     }
     
+    console.log(`Found ${transactions ? transactions.length : 0} transactions for user ${userId}`);
     res.json({ 
       transactions: transactions || [],
       count: transactions ? transactions.length : 0
@@ -602,9 +612,9 @@ app.post('/api/transaction/process', (req, res) => {
         SELECT hsa_account_id FROM virtual_cards WHERE card_number = ?
       )`, [newBalance, cardNumber]);
       
-      db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status) 
-              VALUES (?, ?, ?, ?, 'APPROVED')`,
-        [row.card_id, amount, merchant, description]);
+      db.run(`INSERT INTO transactions (card_id, amount, merchant, description, status, hsa_account_id) 
+              VALUES (?, ?, ?, ?, 'APPROVED', (SELECT hsa_account_id FROM virtual_cards WHERE id = ?))`,
+        [row.card_id, amount, merchant, description, row.card_id]);
       
       res.json({
         status: 'APPROVED',
