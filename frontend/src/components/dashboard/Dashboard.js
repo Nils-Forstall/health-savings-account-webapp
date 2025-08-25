@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DepositModal from './DepositModal';
 import WithdrawModal from './WithdrawModal';
+import CardTransactionModal from './CardTransactionModal';
 import AccountDetailsModal from './AccountDetailsModal';
 import TransactionHistory from './TransactionHistory';
 import ContributionLimits from './ContributionLimits';
@@ -19,6 +20,7 @@ const Dashboard = ({
 }) => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [isCardTransactionModalOpen, setIsCardTransactionModalOpen] = useState(false);
   const [isAccountDetailsModalOpen, setIsAccountDetailsModalOpen] = useState(false);
   const [contributionRefreshTrigger, setContributionRefreshTrigger] = useState(0);
   const [contributionLimits, setContributionLimits] = useState(null);
@@ -52,6 +54,12 @@ const Dashboard = ({
     setContributionRefreshTrigger(prev => prev + 1); // Trigger ContributionLimits refresh
   };
 
+  const handleCardTransactionSuccess = (newBalance) => {
+    onBalanceUpdate(newBalance);
+    onTransactionHistoryUpdate();
+    setContributionRefreshTrigger(prev => prev + 1); // Trigger ContributionLimits refresh
+  };
+
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
   };
@@ -70,6 +78,9 @@ const Dashboard = ({
   
   // Check if withdrawals should be disabled
   const isWithdrawDisabled = loading || (hsaAccount?.balance <= 0);
+  
+  // Check if card transactions should be disabled
+  const isCardTransactionDisabled = loading || (hsaAccount?.balance <= 0);
 
   return (
     <div>
@@ -104,7 +115,7 @@ const Dashboard = ({
         </button>
       </div>
       
-      <div style={{ marginBottom: '2rem', textAlign: 'left' }}>
+      <div style={{ marginBottom: '2rem', textAlign: 'left', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <button 
           onClick={() => setIsAccountDetailsModalOpen(true)} 
           className="primary-btn"
@@ -115,6 +126,21 @@ const Dashboard = ({
           }}
         >
           💳 View Debit Card & Account Details
+        </button>
+        <button 
+          onClick={() => setIsCardTransactionModalOpen(true)} 
+          className="primary-btn"
+          disabled={isCardTransactionDisabled}
+          style={{
+            fontSize: '0.9rem',
+            padding: '0.75rem 1.25rem',
+            opacity: isCardTransactionDisabled ? 0.5 : 1,
+            cursor: isCardTransactionDisabled ? 'not-allowed' : 'pointer',
+            backgroundColor: isCardTransactionDisabled ? '#6c757d' : undefined
+          }}
+          title={hsaAccount?.balance <= 0 ? 'No funds available for card transactions' : undefined}
+        >
+          🛒 Test Card Transaction
         </button>
       </div>
       
@@ -198,6 +224,17 @@ const Dashboard = ({
         user={user}
         hsaAccount={hsaAccount}
         onSuccess={handleWithdrawSuccess}
+        addToast={addToast}
+        setLoading={setLoading}
+        loading={loading}
+      />
+
+      <CardTransactionModal
+        isOpen={isCardTransactionModalOpen}
+        onClose={() => setIsCardTransactionModalOpen(false)}
+        user={user}
+        hsaAccount={hsaAccount}
+        onSuccess={handleCardTransactionSuccess}
         addToast={addToast}
         setLoading={setLoading}
         loading={loading}
