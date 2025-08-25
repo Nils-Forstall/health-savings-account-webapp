@@ -4,63 +4,137 @@ import { hsaService } from '../../services/hsaService';
 
 const DepositModal = ({ isOpen, onClose, user, onSuccess, setMessage, setLoading, loading }) => {
   const [amount, setAmount] = useState('');
-  const [localMessage, setLocalMessage] = useState('');
+  const [step, setStep] = useState('form'); // 'form', 'loading', 'confirmation', 'error'
+  const [result, setResult] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setLocalMessage('');
-
-    try {
-      const response = await hsaService.deposit(user.userId, amount);
-      setLocalMessage(`✅ Deposit successful! New balance: $${response.newBalance.toFixed(2)}. Remaining annual limit: $${response.remainingLimit.toFixed(2)}`);
-      setAmount('');
-      onSuccess(response.newBalance);
-      setTimeout(() => {
-        setLocalMessage('');
-        onClose();
-      }, 2000);
-    } catch (error) {
-      setLocalMessage('❌ ' + (error.response?.data?.error || 'Deposit failed'));
-    }
+    setStep('loading');
     
-    setLoading(false);
+    // Simulate loading for 0.3 seconds
+    setTimeout(async () => {
+      try {
+        const response = await hsaService.deposit(user.userId, amount);
+        setResult(response);
+        onSuccess(response.newBalance);
+        setStep('confirmation');
+      } catch (error) {
+        setErrorMessage(error.response?.data?.error || 'Deposit failed');
+        setStep('error');
+      }
+    }, 300);
   };
 
   const handleClose = () => {
     setAmount('');
-    setLocalMessage('');
+    setStep('form');
+    setResult(null);
+    setErrorMessage('');
     onClose();
   };
 
+  const handleTryAgain = () => {
+    setStep('form');
+    setErrorMessage('');
+  };
+
+  const getModalTitle = () => {
+    switch (step) {
+      case 'loading': return 'Processing Deposit...';
+      case 'confirmation': return 'Deposit Successful';
+      case 'error': return 'Deposit Failed';
+      default: return 'Deposit Money';
+    }
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Deposit Money">
-      <form onSubmit={handleSubmit} className="form">
-        {localMessage && (
-          <div className={`message ${localMessage.includes('❌') ? 'error' : 'success'}`} style={{ marginBottom: '1rem' }}>
-            {localMessage}
+    <Modal isOpen={isOpen} onClose={step === 'loading' ? null : handleClose} title={getModalTitle()}>
+      {step === 'form' && (
+        <form onSubmit={handleSubmit} className="form">
+          <div className="form-group">
+            <label>Amount ($):</label>
+            <input
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+              autoFocus
+            />
           </div>
-        )}
-        <div className="form-group">
-          <label>Amount ($):</label>
-          <input
-            type="number"
-            step="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-            autoFocus
-          />
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+            <button type="button" onClick={handleClose} className="secondary-btn">
+              Cancel
+            </button>
+            <button type="submit" className="primary-btn">
+              Deposit
+            </button>
+          </div>
+        </form>
+      )}
+
+      {step === 'loading' && (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ fontSize: '18px', marginBottom: '1rem' }}>Processing your deposit...</div>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #007bff',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto'
+          }}></div>
+          <style jsx>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-          <button type="button" onClick={handleClose} className="secondary-btn">
-            Cancel
-          </button>
-          <button type="submit" disabled={loading} className="primary-btn">
-            {loading ? 'Processing...' : 'Deposit'}
+      )}
+
+      {step === 'confirmation' && result && (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ fontSize: '48px', color: '#28a745', marginBottom: '1rem' }}>✅</div>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '1rem' }}>
+            Deposit Successful!
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <strong>Amount:</strong> ${parseFloat(amount).toFixed(2)}
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <strong>New Balance:</strong> ${result.newBalance.toFixed(2)}
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <strong>Remaining Annual Limit:</strong> ${result.remainingLimit.toFixed(2)}
+          </div>
+          <button onClick={handleClose} className="primary-btn">
+            Done
           </button>
         </div>
-      </form>
+      )}
+
+      {step === 'error' && (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ fontSize: '48px', color: '#dc3545', marginBottom: '1rem' }}>❌</div>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '1rem' }}>
+            Deposit Failed
+          </div>
+          <div style={{ marginBottom: '2rem', color: '#dc3545' }}>
+            {errorMessage}
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button onClick={handleTryAgain} className="secondary-btn">
+              Try Again
+            </button>
+            <button onClick={handleClose} className="primary-btn">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };
