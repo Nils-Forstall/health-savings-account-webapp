@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
-import MultiStepSignup from './components/auth/MultiStepSignup';
-import LoginForm from './components/auth/LoginForm';
-import HSAApplication from './components/hsa/HSAApplication';
-import Dashboard from './components/dashboard/Dashboard';
-import CardSimulatorPage from './components/simulator/CardSimulatorPage';
+import Navigation from './components/common/Navigation';
+import ProtectedRoute from './components/routes/ProtectedRoute';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import HSAApplicationPage from './pages/HSAApplicationPage';
+import SimulatorPage from './pages/SimulatorPage';
 import Toast from './components/common/Toast';
 import { hsaService } from './services/hsaService';
 
-function App() {
-  const [currentView, setCurrentView] = useState('frontPage');
+function AppContent() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [hsaAccount, setHsaAccount] = useState(null);
   const [transactions, setTransactions] = useState([]);
@@ -45,23 +48,23 @@ function App() {
     try {
       const hsaData = await hsaService.getHSA(userData.userId);
       setHsaAccount(hsaData);
-      setCurrentView('dashboard');
+      navigate('/dashboard');
       fetchTransactionHistory(userData);
     } catch (hsaError) {
       try {
         const newHsaAccount = await hsaService.createHSA(userData.userId);
         setHsaAccount(newHsaAccount);
-        setCurrentView('dashboard');
+        navigate('/dashboard');
         fetchTransactionHistory(userData);
       } catch (createError) {
-        setCurrentView('hsaApplication');
+        navigate('/hsa-application');
       }
     }
   };
 
   const handleHSACreated = (hsaData) => {
     setHsaAccount(hsaData);
-    setCurrentView('dashboard');
+    navigate('/dashboard');
     fetchTransactionHistory(user);
   };
 
@@ -74,112 +77,73 @@ function App() {
     setHsaAccount(null);
     setTransactions([]);
     setIsAuthenticated(false);
-    setCurrentView('frontPage');
     setMessage('');
+    navigate('/');
   };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <div>
-            <h1>🛡️ ForsShield</h1>
-            <p>Your Health Savings Account Management Platform</p>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            {currentView !== 'cardSimulator' && (
-              <button 
-                onClick={() => setCurrentView('cardSimulator')}
-                style={{
-                  background: '#007bff',
-                  color: 'white',
-                  padding: '0.75rem 1.25rem',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                💳 Simulate Transaction
-              </button>
-            )}
-            {isAuthenticated && currentView !== 'dashboard' && (
-              <button 
-                onClick={() => setCurrentView('dashboard')}
-                style={{
-                  background: '#28a745',
-                  color: 'white',
-                  padding: '0.75rem 1.25rem',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                🏠 Dashboard
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
+      <Navigation isAuthenticated={isAuthenticated} onLogout={handleLogout} />
 
       <main className="App-main">
-        {currentView === 'frontPage' && (
-          <MultiStepSignup
-            onSuccess={handleAuthSuccess}
-            onSwitchToLogin={() => setCurrentView('login')}
-            addToast={addToast}
-            setLoading={setLoading}
-            loading={loading}
-          />
-        )}
-
-        {currentView === 'login' && (
-          <LoginForm
-            onSuccess={handleAuthSuccess}
-            onSwitchToSignUp={() => setCurrentView('frontPage')}
-            addToast={addToast}
-            setLoading={setLoading}
-            loading={loading}
-          />
-        )}
-
-        {currentView === 'hsaApplication' && (
-          <HSAApplication
-            user={user}
-            onSuccess={handleHSACreated}
-            addToast={addToast}
-            setLoading={setLoading}
-            loading={loading}
-          />
-        )}
-
-        {currentView === 'dashboard' && (
-          <Dashboard
-            user={user}
-            hsaAccount={hsaAccount}
-            transactions={transactions}
-            onBalanceUpdate={handleBalanceUpdate}
-            onTransactionHistoryUpdate={fetchTransactionHistory}
-            addToast={addToast}
-            setLoading={setLoading}
-            loading={loading}
-            onLogout={handleLogout}
-          />
-        )}
-
-        {currentView === 'cardSimulator' && (
-          <CardSimulatorPage
-            addToast={addToast}
-            setLoading={setLoading}
-            loading={loading}
-            onBackToHome={() => setCurrentView(isAuthenticated ? 'dashboard' : 'frontPage')}
-          />
-        )}
+        <Routes>
+          <Route path="/" element={
+            <HomePage
+              onAuthSuccess={handleAuthSuccess}
+              addToast={addToast}
+              setLoading={setLoading}
+              loading={loading}
+            />
+          } />
+          
+          <Route path="/login" element={
+            <LoginPage
+              onAuthSuccess={handleAuthSuccess}
+              addToast={addToast}
+              setLoading={setLoading}
+              loading={loading}
+            />
+          } />
+          
+          <Route path="/dashboard" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <DashboardPage
+                user={user}
+                hsaAccount={hsaAccount}
+                transactions={transactions}
+                onBalanceUpdate={handleBalanceUpdate}
+                onTransactionHistoryUpdate={fetchTransactionHistory}
+                addToast={addToast}
+                setLoading={setLoading}
+                loading={loading}
+              />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/hsa-application" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <HSAApplicationPage
+                user={user}
+                onSuccess={handleHSACreated}
+                addToast={addToast}
+                setLoading={setLoading}
+                loading={loading}
+              />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/simulator" element={
+            <SimulatorPage
+              addToast={addToast}
+              setLoading={setLoading}
+              loading={loading}
+              isAuthenticated={isAuthenticated}
+            />
+          } />
+          
+          {/* Redirect unknown routes to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       {/* Toast Container */}
@@ -194,6 +158,14 @@ function App() {
         ))}
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
