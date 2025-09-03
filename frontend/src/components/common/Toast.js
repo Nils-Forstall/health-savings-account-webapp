@@ -18,7 +18,7 @@ const Toast = ({ message, type = 'success', duration = 3000, onClose }) => {
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration]); // Removed onClose from dependencies
 
   if (!isVisible) return null;
 

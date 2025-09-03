@@ -170,15 +170,6 @@ function calculateContributionLimit(dateOfBirth, coverageType, year = new Date()
   const baseLimit = getBaseAnnualLimit(coverageType, year);
   const catchUpLimit = isCatchUpEligible(dateOfBirth, year) ? 1000 : 0;
   
-  console.log('Contribution limit calculation:', {
-    dateOfBirth,
-    coverageType,
-    year,
-    baseLimit,
-    catchUpLimit,
-    totalLimit: baseLimit + catchUpLimit
-  });
-  
   return baseLimit + catchUpLimit;
 }
 
@@ -486,7 +477,7 @@ app.post('/api/hsa/deposit', (req, res) => {
           depositAmount: parseFloat(amount),
           wouldExceed: parseFloat(amount) > remainingLimit
         });
-        
+        th
         if (parseFloat(amount) > remainingLimit) {
           return res.status(400).json({ 
             error: `Contribution exceeds annual limit. Remaining limit: $${remainingLimit.toFixed(2)}`,
